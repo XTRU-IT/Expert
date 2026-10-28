@@ -1,0 +1,714 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e1120">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Expert Lounge</title>
+<style>
+:root{
+  --bg0:#07090f;--card:rgba(20,23,36,.72);--card2:rgba(255,255,255,.05);--line:rgba(214,176,74,.14);--line2:rgba(214,176,74,.26);
+  --tx:#f1ede4;--mu:#9a968c;--dim:#625e55;
+  --gold:#dcb54c;--gold2:#b98f22;--goldtx:#1a1404;--goldline:rgba(220,181,76,.55);--goldbg:rgba(220,181,76,.16);
+  --ok:#55d3a8;--warn:#ff5f6e;--blue:#7fb0ff;--tabh:64px;
+  --serif:'Playfair Display',Georgia,serif;--font:'Nunito Sans',system-ui,-apple-system,Roboto,'Segoe UI',sans-serif}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg0)}
+html,body{margin:0;color:var(--tx);font:16px/1.4 var(--font)}
+body{min-height:100vh;padding-bottom:calc(var(--tabh) + env(safe-area-inset-bottom))}
+body::before{content:'';position:fixed;inset:0;z-index:-1;background:
+  radial-gradient(90% 40% at 50% -8%,rgba(40,70,130,.40),transparent 70%),
+  linear-gradient(180deg,#0e1120 0%,#0a0c17 45%,#07090f 100%)}
+main{padding:14px 16px 24px;max-width:760px;margin:0 auto}
+main.withfoot{padding-bottom:120px}
+h1{margin:0;font:800 25px/1.1 var(--serif);letter-spacing:.06em;text-transform:uppercase;background:linear-gradient(180deg,#f0d27a,#b98f22);-webkit-background-clip:text;background-clip:text;color:transparent}
+h2{margin:0 0 12px;font:700 21px/1.2 var(--serif);letter-spacing:.02em}
+.h3{font-weight:700;margin:0 0 10px;font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.12em}
+.muted{color:var(--mu)}.small{font-size:13px}.gold{color:var(--gold)}
+.brand{text-align:center;margin:10px 2px 16px}
+.brand .sub{display:block;margin-top:6px;font-size:11px;color:var(--mu);letter-spacing:.28em;text-transform:uppercase}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:14px 16px;margin-bottom:12px}
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:10px 18px;min-height:46px;font-weight:600;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:linear-gradient(180deg,#ecc85c,#c99d2a);border-color:transparent;color:var(--goldtx);font-weight:800;box-shadow:0 0 22px -6px rgba(232,195,80,.55)}
+.btn.warn{background:var(--warn);border-color:transparent;color:#fff;font-weight:800}
+.btn.okb{background:transparent;border-color:var(--ok);color:var(--ok);font-weight:800}
+.btn.ghost{background:none;border-color:transparent;color:var(--mu)}
+.btn.outline{background:transparent;border-color:var(--goldline);color:var(--gold)}
+.btn.big{min-height:56px;font-size:17px}
+.btn.sm{min-height:38px;padding:6px 14px;font-size:14px}
+.btn.full{width:100%}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 4px}
+input,select,textarea{font:inherit;color:var(--tx);background:rgba(6,10,24,.55);border:1px solid var(--line2);border-radius:16px;padding:12px 16px;width:100%;min-height:50px}
+input::placeholder{color:var(--dim)}
+input:focus,select:focus{outline:none;border-color:var(--goldline);box-shadow:0 0 0 3px rgba(220,181,76,.12)}
+select option{background:#11131d}
+label{display:block;margin:10px 0;color:var(--mu);font-size:13px}
+label input,label select{margin-top:6px}
+label.chk{display:flex;align-items:center;gap:12px;color:var(--tx);font-size:15px}
+label.chk input{width:22px;height:22px;min-height:0;margin:0;accent-color:var(--gold)}
+#tabs{position:fixed;bottom:0;left:0;right:0;display:flex;background:rgba(7,9,15,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom);z-index:5}
+#tabs button{flex:1;height:var(--tabh);background:none;border:0;color:var(--dim);font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+#tabs svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#tabs button.on{color:var(--gold)}
+.shiftbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.shiftbar.off{border-color:var(--goldline)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:12px}
+.tile{background:linear-gradient(160deg,rgba(28,32,50,.85),rgba(16,18,30,.8));border:1px solid var(--line2);border-radius:24px;min-height:108px;padding:10px 12px;display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:1px;position:relative;overflow:hidden}
+.tile:active{transform:scale(.97)}
+.tile .tn{font:800 30px/1.05 var(--serif)}
+.tile .ts{font-size:12px;color:var(--mu)}
+.tile .tg{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.tile .tsum{font-weight:800;color:var(--gold)}
+.tile .tw{font-size:12px;font-weight:700}
+.tile.free{background:rgba(18,20,32,.45);border-color:var(--line)}
+.tile.free .tn{color:var(--dim)}
+.tile.busy{border-color:var(--goldline);box-shadow:0 0 24px -8px rgba(220,181,76,.4)}
+.tile.busy .tn{color:var(--gold)}
+.tile.alert{border-color:var(--warn);animation:pulse 1.2s infinite}
+.tile.idle .tw{color:var(--blue)}
+.tile.alert .tw{color:var(--warn)}
+@keyframes pulse{50%{box-shadow:0 0 0 4px rgba(255,95,110,.3)}}
+.chrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.chrow:first-of-type{border-top:0;padding-top:0}
+.chrow.due b{color:var(--warn)}
+.tm{font-size:13px;color:var(--mu);font-variant-numeric:tabular-nums}
+.tm.due{color:var(--warn);font-weight:700}
+.tm.wait{color:var(--ok)}
+.tm.idle{color:var(--blue)}
+.ohead{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.back{width:46px;height:46px;border-radius:50%;background:rgba(20,23,36,.8);border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:22px;flex:0 0 auto}
+.otitle{font:800 24px/1.1 var(--serif);flex:1;letter-spacing:.03em}
+.guest{display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer}
+.link{color:var(--gold);font-size:14px;font-weight:600;white-space:nowrap}
+.hot{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.hb{background:linear-gradient(160deg,rgba(30,32,48,.9),rgba(18,20,32,.85));border:1px solid var(--goldline);border-radius:20px;min-height:66px;padding:10px 14px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;text-align:left;font-weight:700}
+.hb:active{background:var(--gold);color:var(--goldtx)}
+.hb small{color:var(--gold);font-weight:600}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:10px 0;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{background:var(--goldbg);border:1px solid transparent;border-radius:999px;padding:7px 14px;white-space:nowrap;font-size:14px;font-weight:600;color:#e6dcc4}
+.chip.on{background:linear-gradient(180deg,#ecc85c,#c99d2a);color:var(--goldtx)}
+.res{display:flex;justify-content:space-between;align-items:center;width:100%;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:10px 16px;margin-bottom:8px;text-align:left;min-height:54px}
+.res:active{border-color:var(--goldline)}
+.res .c{font-size:12px;color:var(--mu)}
+.res b{color:var(--gold)}
+.item{display:flex;align-items:center;gap:8px;padding:12px 0;border-top:1px solid var(--line)}
+.item:first-of-type{border-top:0}
+.item .in{flex:1;min-width:0}
+.item.due .in b{color:var(--warn)}
+.qty{display:flex;align-items:center;gap:6px}
+.qty .btn{width:38px;padding:0}
+.qty b{min-width:22px;text-align:center}
+.x{background:none;border:0;color:var(--dim);font-size:18px;padding:8px;min-width:36px}
+.footer{position:fixed;left:0;right:0;bottom:calc(var(--tabh) + env(safe-area-inset-bottom));background:rgba(7,9,15,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:4}
+.footer .total{font-size:26px;font-weight:800}
+.footer .btn{flex:0 0 auto}
+#modal{position:fixed;inset:0;background:rgba(3,6,16,.7);display:none;align-items:flex-end;justify-content:center;z-index:10}
+#modal.on{display:flex}
+.sheet{background:linear-gradient(180deg,#151827,#0b0d16);border:1px solid var(--line2);border-bottom:0;border-radius:28px 28px 0 0;width:100%;max-width:760px;max-height:92vh;overflow:auto;padding:22px 18px calc(18px + env(safe-area-inset-bottom))}
+.sheet .btn{margin-top:10px}
+.ln{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ln.total{font-size:22px;font-weight:800;border:0;padding-top:14px}
+.ln.total span:last-child{color:var(--gold)}
+.sep{height:1px;background:var(--line);margin:16px 0}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:12px 14px}
+.kpi b{display:block;font-size:22px;font-weight:800}
+.kpi:first-child b{color:var(--gold)}
+.kpi span{font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.08em}
+.bar{margin:10px 0}
+.bar .bt{display:flex;justify-content:space-between;font-size:14px}
+.bar .bb{height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-top:6px}
+.bar .bb i{display:block;height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));border-radius:3px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:8px 4px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--mu);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+td.r,th.r{text-align:right;white-space:nowrap}
+.lrow{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;background:none;border:0;border-top:1px solid var(--line);padding:12px 0;text-align:left;min-height:52px}
+.lrow:first-child{border-top:0}
+.lrow b{white-space:nowrap}
+.tags{margin-top:4px;display:flex;gap:6px}
+.tag{display:inline-block;font-size:11px;line-height:16px;padding:2px 8px;border-radius:999px;border:1px solid var(--line2);color:var(--mu);font-weight:600}
+.tag.hot{color:#e6dcc4;background:var(--goldbg);border-color:transparent}.tag.coal{color:var(--warn);border-color:rgba(255,95,110,.45)}
+details summary{cursor:pointer;color:var(--mu);padding:4px 0}
+#toast{position:fixed;left:50%;bottom:calc(var(--tabh) + 92px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(20,22,34,.96);border:1px solid var(--goldline);color:var(--tx);padding:10px 18px;border-radius:999px;z-index:20;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;text-align:center;font-weight:600}
+#toast.on{opacity:1}
+.empty{color:var(--mu);text-align:center;padding:18px}
+.mcat{font:700 17px/1.2 var(--serif);text-transform:uppercase;letter-spacing:.04em;color:var(--tx)}
+</style>
+</head>
+<body>
+<main id="view"></main>
+<nav id="tabs">
+  <button data-a="tab" data-v="tables"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="2.2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2.2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2.2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2.2"/></svg>Столы</button>
+  <button data-a="tab" data-v="stats"><svg viewBox="0 0 24 24"><path d="M5 20v-6M12 20V5M19 20v-10"/></svg>Статистика</button>
+  <button data-a="tab" data-v="guests"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c1.8.7 3 2.5 3.5 5.2"/></svg>Гости</button>
+  <button data-a="tab" data-v="menu"><svg viewBox="0 0 24 24"><path d="M9 6h12M9 12h12M9 18h12"/><circle cx="4" cy="6" r="1.2"/><circle cx="4" cy="12" r="1.2"/><circle cx="4" cy="18" r="1.2"/></svg>Позиции</button>
+  <button data-a="tab" data-v="more"><svg viewBox="0 0 24 24"><path d="M4 7h9M19 7h1M4 17h3M13 17h7"/><circle cx="16" cy="7" r="2.5"/><circle cx="10" cy="17" r="2.5"/></svg>Ещё</button>
+</nav>
+<div id="modal"></div>
+<div id="toast"></div>
+<input type="file" id="restoreFile" accept=".txt,.json,text/plain,application/json" hidden>
+<script>
+'use strict';
+const APP = 'kalyan-master', TITLE = 'Expert Lounge', VERSION = '1.0';
+
+// ---------- утилиты ----------
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const money = n => Math.round(n).toLocaleString('ru-RU') + ' ₽';
+const norm = s => String(s || '').toLowerCase().replace(/ё/g, 'е');
+const pad = n => String(n).padStart(2, '0');
+const fmtTime = ts => { const d = new Date(ts); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+const fmtDate = ts => { const d = new Date(ts); return pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + '.' + d.getFullYear(); };
+const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+function fmtDur(ms) { const m = Math.max(0, Math.floor(ms / 60000)), h = Math.floor(m / 60); return h ? `${h} ч ${m % 60} мин` : `${m} мин`; }
+function fmtClock(ms) { const s = Math.floor(Math.abs(ms) / 1000), h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60; return (h ? h + ':' + pad(m) : m) + ':' + pad(s % 60); }
+let toastT;
+function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('on'), 1800); }
+
+// ---------- хранилище (IndexedDB, всё в телефоне) ----------
+const DB = {
+  db: null,
+  open() { return new Promise((res, rej) => { const r = indexedDB.open(APP, 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => { this.db = r.result; res(); }; r.onerror = () => rej(r.error); }); },
+  get(k) { return new Promise((res, rej) => { const r = this.db.transaction('kv').objectStore('kv').get(k); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); },
+  set(k, v) { return new Promise((res, rej) => { const tx = this.db.transaction('kv', 'readwrite'); tx.objectStore('kv').put(v, k); tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error); }); }
+};
+
+function defaultState() {
+  const p = (name, price, catId, hot = false, coal = false, pack = 1) => ({ id: uid(), name, price, catId, hot, coal, pack });
+  return {
+    categories: [
+      { id: 'c_hk', name: 'Кальяны' }, { id: 'c_tea', name: 'Чай классический', hot: true }, { id: 'c_tea_cn', name: 'Китайский чай' },
+      { id: 'c_tea_a', name: 'Авторский чай' }, { id: 'c_drink', name: 'Напитки' }, { id: 'c_lemon', name: 'Авторские лимонады' },
+      { id: 'c_snack', name: 'Снеки и закуски' }, { id: 'c_add', name: 'Добавки в чай' }, { id: 'c_more', name: 'А ещё для вас' }
+    ],
+    products: [
+      p('Кальян на чаше', 1099, 'c_hk', true, true),
+      p('Кальян на Хука Pro', 1499, 'c_hk', true, false),
+      p('Кальян 16–17 (акция)', 999, 'c_hk', true, true),
+      p('3 кальяна (акция)', 2999, 'c_hk', true, true, 3),
+      ...['Молочный улун', 'Зелёный с жасмином', 'Сенча', 'Ассам', 'Эрл Грей'].map(n => p(n, 499, 'c_tea')),
+      ...['Те Гуань Инь', 'Габа Алишань', 'Да Хун Пао', 'Тибетский горный', '10-летний Пуэр', 'Белый чай'].map(n => p(n, 499, 'c_tea_cn')),
+      ...['Апельсин — Ёлка', 'Малина — Ананас', 'Земляника — Вишня', 'Смородина — Мята', 'Синий чай'].map(n => p(n, 499, 'c_tea_a')),
+      p('Кола оригинал 1 л', 449, 'c_drink'), p('Кола оригинал 2 л', 649, 'c_drink'), p('Кола / Фанта 0,33', 299, 'c_drink'),
+      p('Чупа-Чупс', 349, 'c_drink'), p('Липтон 500 мл', 299, 'c_drink'), p('Red Bull 250 мл', 399, 'c_drink'),
+      p('Мохито 500 мл', 299, 'c_drink'), p('Вода газ/б.г. 500 мл', 199, 'c_drink'), p('Кола фрешбар 500 мл', 249, 'c_drink'),
+      p('Милкис', 299, 'c_drink'), p('Адреналин 500 мл', 399, 'c_drink'), p('Натахтари 500 мл', 299, 'c_drink'),
+      ...['Пало Санто — Банан', 'Ананас — Лемонграсс', 'Кокос — Ладан', 'Манго — Маракуйя', 'Клюква — Каламанси', 'Щавель — Ананас', 'Апельсин — Ваниль']
+        .flatMap(n => [p(n + ' 0,5 л', 399, 'c_lemon'), p(n + ' 1 л', 749, 'c_lemon')]),
+      p('Lays', 349, 'c_snack'), p('Pringles', 649, 'c_snack'), p('Сухарики', 199, 'c_snack'), p('Орешки', 199, 'c_snack'),
+      p('Шоколад батончик', 199, 'c_snack'), p('Шоколад плитка', 299, 'c_snack'), p('Сыр', 199, 'c_snack'), p('Карпачо', 299, 'c_snack'),
+      ...['Чабрец', 'Лимон', 'Мята'].map(n => p(n, 99, 'c_add')),
+      p('Забивка с собой', 399, 'c_more'), p('Кальян в аренду (сутки)', 999, 'c_more'), p('Уголь 72 шт (25 мм)', 699, 'c_more'),
+      p('PS5 депозит (с человека)', 1000, 'c_more'), p('Пробковый сбор: б/а и пиво (ед.)', 249, 'c_more'), p('Пробковый сбор: остальное', 499, 'c_more')
+    ],
+    tables: Array.from({ length: 10 }, (_, i) => ({ id: 't' + (i + 1), name: String(i + 1) })),
+    guests: [], orders: [], checks: [], shifts: [], shiftId: null,
+    settings: { changes: [30, 60], sound: true, wake: false },
+    lastBackup: null
+  };
+}
+function migrate(s) {
+  const d = defaultState();
+  for (const k of Object.keys(d)) if (s[k] === undefined) s[k] = d[k];
+  s.settings = Object.assign({}, d.settings, s.settings);
+  return s;
+}
+
+let S;
+const ui = { view: 'tables', orderId: null, q: '', cat: null, statsP: 'shift', statsShift: null, statsFrom: '', statsTo: '', gq: '', mq: '' };
+async function save() { try { await DB.set('state', S); } catch (e) { toast('Ошибка сохранения: ' + e.message); } }
+function commit() { save(); render(); }
+
+// ---------- выборки ----------
+const curShift = () => S.shifts.find(s => s.id === S.shiftId) || null;
+const tableName = id => (S.tables.find(t => t.id === id) || {}).name || '?';
+const catName = id => (S.categories.find(c => c.id === id) || {}).name || 'Без категории';
+const orderByTable = id => S.orders.find(o => o.tableId === id);
+const orderTotal = o => o.items.reduce((a, i) => a + i.price * i.qty, 0);
+const guestById = id => S.guests.find(g => g.id === id);
+function guestName(o) { if (!o.guestId) return 'Без имени'; const g = guestById(o.guestId); return g ? g.name : (o.guestName || 'Гость'); }
+
+function coalInfo(it, now) {
+  if (!it.coal) return null;
+  if (!it.startedAt) return { state: 'idle' };
+  const el = now - it.startedAt, ch = S.settings.changes, done = it.done || 0;
+  if (done >= ch.length) return { state: 'finished', el };
+  const due = it.startedAt + ch[done] * 60000;
+  return { state: now >= due ? 'due' : 'wait', el, due, left: due - now, n: done + 1 };
+}
+function coalText(c) {
+  if (c.state === 'idle') return 'не вынесен — нажмите ▶ когда вынесете';
+  if (c.state === 'wait') return `замена ${c.n} через ${fmtClock(c.left)} · курится ${fmtClock(c.el)}`;
+  if (c.state === 'due') return `⚠ ЗАМЕНА ${c.n}! просрочено ${fmtClock(c.left)} · курится ${fmtClock(c.el)}`;
+  return `курится ${fmtClock(c.el)} · замены сделаны`;
+}
+
+// ---------- отрисовка ----------
+function render() {
+  const v = ui.view;
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.v === v || (v === 'order' && b.dataset.v === 'tables')));
+  const views = { tables: vTables, order: vOrder, stats: vStats, guests: vGuests, menu: vMenu, more: vMore };
+  const main = $('#view');
+  main.innerHTML = (views[v] || vTables)();
+  main.classList.toggle('withfoot', ui.view === 'order');
+  panelSig = null;
+  tick();
+}
+
+function vTables() {
+  const sh = curShift();
+  let h = `<div class="brand"><h1>${TITLE}</h1><span class="sub">${new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })}</span></div>`;
+  if (!sh) {
+    h += `<div class="card shiftbar off"><div><b>Смена закрыта</b><div class="muted small">Откройте смену, чтобы сажать гостей</div></div><button class="btn primary" data-a="shiftOpen">Открыть смену</button></div>`;
+  } else {
+    const cs = S.checks.filter(c => c.shiftId === sh.id);
+    h += `<div class="card shiftbar"><div><b>Смена с ${fmtTime(sh.openedAt)}</b> <span class="muted small" style="white-space:nowrap">· <span data-since="${sh.openedAt}"></span></span><div class="muted small">${money(cs.reduce((a, c) => a + c.total, 0))} · чеков ${cs.length} · открыто столов ${S.orders.length}</div></div><button class="btn sm" data-a="shiftClose">Закрыть смену</button></div>`;
+  }
+  h += `<div id="changes"></div><div class="grid">`;
+  for (const t of S.tables) {
+    const o = orderByTable(t.id);
+    if (!o) h += `<button class="tile free" data-a="tableTap" data-t="${t.id}"><span class="tn">${esc(t.name)}</span><span class="ts">свободен</span></button>`;
+    else h += `<button class="tile busy" data-a="tableTap" data-t="${t.id}" data-ot="${o.id}"><span class="tn">${esc(t.name)}</span><span class="tg">${esc(guestName(o))}</span><span class="tsum">${money(orderTotal(o))}</span><span class="ts" data-since="${o.openedAt}"></span><span class="tw"></span></button>`;
+  }
+  return h + `</div>`;
+}
+
+function itemHtml(o, it) {
+  if (it.coal) {
+    const c = coalInfo(it, Date.now());
+    const btn = c.state === 'idle' ? `<button class="btn okb sm" data-a="coalStart" data-o="${o.id}" data-i="${it.id}">▶ Вынес</button>`
+      : c.state === 'finished' ? '' : `<button class="btn sm" data-a="coalDone" data-o="${o.id}" data-i="${it.id}">Заменил</button>`;
+    return `<div class="item" data-row="${it.id}"><div class="in"><b>${esc(it.name)}</b> <span class="muted">#${it.no} · ${money(it.price)}</span><div class="tm" data-o="${o.id}" data-i="${it.id}"></div></div>${btn}<button class="x" data-a="itemDel" data-o="${o.id}" data-i="${it.id}">✕</button></div>`;
+  }
+  return `<div class="item"><div class="in"><b>${esc(it.name)}</b><div class="muted small">${money(it.price)} × ${it.qty} = ${money(it.price * it.qty)}</div></div><div class="qty"><button class="btn sm" data-a="qty" data-d="-1" data-o="${o.id}" data-i="${it.id}">−</button><b>${it.qty}</b><button class="btn sm" data-a="qty" data-d="1" data-o="${o.id}" data-i="${it.id}">+</button></div></div>`;
+}
+
+function vOrder() {
+  const o = S.orders.find(x => x.id === ui.orderId);
+  if (!o) { ui.view = 'tables'; return vTables(); }
+  const g = o.guestId && guestById(o.guestId);
+  const hot = S.products.filter(p => p.hot), hotCats = S.categories.filter(c => c.hot);
+  let h = `<div class="ohead"><button class="back" data-a="tab" data-v="tables" aria-label="Назад">‹</button><div class="otitle">Стол ${esc(tableName(o.tableId))}</div><button class="btn sm outline" data-a="moveAsk">Пересадить</button></div>`;
+  h += `<div class="muted small" style="margin:-4px 0 10px">Открыт в ${fmtTime(o.openedAt)} · сидят <span data-since="${o.openedAt}"></span></div>`;
+  h += `<div class="card guest" data-a="pickGuest"><span>${g ? `<b>${esc(g.name)}</b> <span class="muted small">${esc(g.phone || '')}</span>` : 'Гость без имени'}</span><span class="link">${g ? 'сменить' : 'выбрать постоянника'}</span></div>`;
+  if (hot.length || hotCats.length) h += `<div class="hot">${hot.map(p => `<button class="hb" data-a="add" data-p="${p.id}"><span>${esc(p.name)}</span><small>${money(p.price)}</small></button>`).join('')}${hotCats.map(c => `<button class="hb" data-a="cat" data-c="${c.id}" data-scroll="1"><span>${esc(c.name)}</span><small>выбрать сорт ›</small></button>`).join('')}</div>`;
+  h += `<input id="q" type="search" placeholder="Поиск позиции…" value="${esc(ui.q)}" autocomplete="off">`;
+  h += `<div class="chips">${S.categories.map(c => `<button class="chip ${ui.cat === c.id ? 'on' : ''}" data-a="cat" data-c="${c.id}">${esc(c.name)}</button>`).join('')}</div>`;
+  h += `<div id="results">${resultsHtml()}</div>`;
+  h += `<div class="card"><div class="h3">Заказ</div>${o.items.length ? o.items.map(it => itemHtml(o, it)).join('') : '<div class="empty">Пока пусто — добавьте позиции кнопками выше</div>'}</div>`;
+  h += o.items.length
+    ? `<div class="footer"><div><div class="muted small">Итого</div><div class="total">${money(orderTotal(o))}</div></div><button class="btn primary big" data-a="closeAsk">Закрыть стол</button></div>`
+    : `<div class="footer"><div class="muted small">Стол открыт по ошибке?</div><button class="btn big" data-a="cancelOrder">Освободить стол</button></div>`;
+  return h;
+}
+
+function resultsHtml() {
+  const q = norm(ui.q.trim());
+  if (!q && !ui.cat) return '';
+  const list = S.products.filter(p => (!ui.cat || p.catId === ui.cat) && (!q || norm(p.name).includes(q) || norm(catName(p.catId)).includes(q)));
+  if (!list.length) return '<div class="empty">Ничего не найдено</div>';
+  return list.map(p => `<button class="res" data-a="add" data-p="${p.id}"><span>${esc(p.name)}<div class="c">${esc(catName(p.catId))}</div></span><b>${money(p.price)}</b></button>`).join('');
+}
+
+// ---------- статистика ----------
+const PERIODS = [['shift', 'Смена'], ['today', 'Сегодня'], ['yest', 'Вчера'], ['week', '7 дней'], ['month', 'Этот месяц'], ['pmonth', 'Прошлый месяц'], ['all', 'Всё время'], ['custom', 'Период…']];
+function periodChecks() {
+  if (ui.statsP === 'shift') {
+    const id = ui.statsShift || S.shiftId || (S.shifts.length ? S.shifts[S.shifts.length - 1].id : null);
+    const sh = S.shifts.find(s => s.id === id);
+    return { checks: S.checks.filter(c => c.shiftId === id), label: sh ? `Смена ${fmtDate(sh.openedAt)} ${fmtTime(sh.openedAt)}–${sh.closedAt ? fmtTime(sh.closedAt) : 'сейчас'}` : 'Смен ещё не было', shift: sh };
+  }
+  const n = new Date(), d0 = new Date(n.getFullYear(), n.getMonth(), n.getDate()).getTime();
+  let from = 0, to = Infinity;
+  switch (ui.statsP) {
+    case 'today': from = d0; break;
+    case 'yest': from = new Date(n.getFullYear(), n.getMonth(), n.getDate() - 1).getTime(); to = d0; break;
+    case 'week': from = new Date(n.getFullYear(), n.getMonth(), n.getDate() - 6).getTime(); break;
+    case 'month': from = new Date(n.getFullYear(), n.getMonth(), 1).getTime(); break;
+    case 'pmonth': from = new Date(n.getFullYear(), n.getMonth() - 1, 1).getTime(); to = new Date(n.getFullYear(), n.getMonth(), 1).getTime(); break;
+    case 'custom':
+      if (ui.statsFrom) { const [y, m, d] = ui.statsFrom.split('-'); from = new Date(y, m - 1, d).getTime(); }
+      if (ui.statsTo) { const [y, m, d] = ui.statsTo.split('-'); to = new Date(y, m - 1, +d + 1).getTime(); }
+      break;
+  }
+  const label = to === Infinity ? (from ? `с ${fmtDate(from)}` : 'Всё время') : `${fmtDate(from)} — ${fmtDate(to - 1)}`;
+  return { checks: S.checks.filter(c => c.closedAt >= from && c.closedAt < to), label, from, to };
+}
+function calc(checks) {
+  const r = { rev: 0, n: checks.length, card: 0, cash: 0, cats: {}, prods: {} };
+  for (const c of checks) {
+    r.rev += c.total; r[c.pay] = (r[c.pay] || 0) + c.total;
+    for (const i of c.items) {
+      const s = i.price * i.qty;
+      r.cats[i.cat] = (r.cats[i.cat] || 0) + s;
+      const p = r.prods[i.pid] || (r.prods[i.pid] = { name: i.name, qty: 0, sum: 0 });
+      p.qty += i.qty; p.sum += s;
+    }
+  }
+  return r;
+}
+function summaryHtml(r) {
+  let h = `<div class="kpis"><div class="kpi"><span>Выручка</span><b>${money(r.rev)}</b></div><div class="kpi"><span>Чеков</span><b>${r.n}</b></div>
+    <div class="kpi"><span>Карта</span><b>${money(r.card)}</b></div><div class="kpi"><span>Наличные</span><b>${money(r.cash)}</b></div>
+    <div class="kpi"><span>Средний чек</span><b>${money(r.n ? r.rev / r.n : 0)}</b></div></div>`;
+  const cats = Object.entries(r.cats).sort((a, b) => b[1] - a[1]);
+  const max = cats.length ? cats[0][1] : 1;
+  if (cats.length) h += `<div class="card"><div class="h3">По категориям</div>${cats.map(([id, s]) => `<div class="bar"><div class="bt"><span>${esc(catName(id))}</span><b>${money(s)} · ${Math.round(s / r.rev * 100)}%</b></div><div class="bb"><i style="width:${s / max * 100}%"></i></div></div>`).join('')}</div>`;
+  return h;
+}
+function vStats() {
+  const P = periodChecks(), r = calc(P.checks);
+  let h = `<div class="chips">${PERIODS.map(([k, t]) => `<button class="chip ${ui.statsP === k ? 'on' : ''}" data-a="statsP" data-p="${k}">${t}</button>`).join('')}</div>`;
+  if (ui.statsP === 'custom') h += `<div class="row2" style="margin-top:0"><label>С<input type="date" id="sf" value="${ui.statsFrom}"></label><label>По<input type="date" id="st" value="${ui.statsTo}"></label></div>`;
+  h += `<div class="muted" style="margin-bottom:10px">${esc(P.label)}</div>`;
+  h += summaryHtml(r);
+  const prods = Object.entries(r.prods).sort((a, b) => b[1].sum - a[1].sum);
+  if (prods.length) h += `<div class="card"><div class="h3">Позиции</div><table><tr><th>Позиция</th><th class="r">Шт</th><th class="r">Сумма</th></tr>${prods.map(([, p]) => `<tr><td>${esc(p.name)}</td><td class="r">${p.qty}</td><td class="r">${money(p.sum)}</td></tr>`).join('')}</table></div>`;
+  const unsold = S.products.filter(p => !r.prods[p.id]);
+  if (unsold.length && P.checks.length) h += `<div class="card"><details><summary>Не продавались за период (${unsold.length})</summary>${unsold.map(p => `<div class="ln"><span>${esc(p.name)}</span><span class="muted">${esc(catName(p.catId))}</span></div>`).join('')}</details></div>`;
+  if (ui.statsP !== 'shift') {
+    const shs = S.shifts.filter(s => s.openedAt >= (P.from || 0) && s.openedAt < (P.to ?? Infinity)).reverse();
+    if (shs.length) h += `<div class="card"><div class="h3">Смены</div>${shs.map(s => { const cs = S.checks.filter(c => c.shiftId === s.id); return `<button class="lrow" data-a="statsShift" data-s="${s.id}"><span>${fmtDate(s.openedAt)} ${fmtTime(s.openedAt)}–${s.closedAt ? fmtTime(s.closedAt) : 'идёт'}<div class="muted small">${s.closedAt ? fmtDur(s.closedAt - s.openedAt) : ''} · чеков ${cs.length}</div></span><b>${money(cs.reduce((a, c) => a + c.total, 0))}</b></button>`; }).join('')}</div>`;
+  } else {
+    const shs = S.shifts.slice().reverse().slice(0, 30);
+    if (shs.length > 1) h += `<div class="card"><details><summary>Другие смены</summary>${shs.map(s => `<button class="lrow" data-a="statsShift" data-s="${s.id}"><span>${fmtDate(s.openedAt)} ${fmtTime(s.openedAt)}–${s.closedAt ? fmtTime(s.closedAt) : 'идёт'}</span><b>${money(S.checks.filter(c => c.shiftId === s.id).reduce((a, c) => a + c.total, 0))}</b></button>`).join('')}</details></div>`;
+  }
+  const cl = P.checks.slice().reverse();
+  h += `<div class="card"><div class="h3">Чеки (${cl.length})</div>${cl.length ? cl.slice(0, 200).map(c => `<button class="lrow" data-a="checkOpen" data-c="${c.id}"><span>${fmtDate(c.closedAt)} ${fmtTime(c.closedAt)} · стол ${esc(c.tableName)}<div class="muted small">${esc(c.guestName || 'Без имени')} · ${c.pay === 'card' ? 'карта' : 'наличные'}</div></span><b>${money(c.total)}</b></button>`).join('') : '<div class="empty">Чеков нет</div>'}</div>`;
+  return h;
+}
+
+// ---------- гости ----------
+function guestStats() {
+  const m = {};
+  for (const c of S.checks) if (c.guestId) { const x = m[c.guestId] || (m[c.guestId] = { n: 0, sum: 0, last: 0 }); x.n++; x.sum += c.total; x.last = Math.max(x.last, c.closedAt); }
+  return m;
+}
+function guestListHtml() {
+  const q = norm(ui.gq.trim()), st = guestStats();
+  const list = S.guests.filter(g => !q || norm(g.name).includes(q) || norm(g.phone).includes(q)).sort((a, b) => (st[b.id]?.last || 0) - (st[a.id]?.last || 0) || a.name.localeCompare(b.name));
+  if (!list.length) return `<div class="empty">${S.guests.length ? 'Никого не нашли' : 'Постоянников пока нет'}</div>`;
+  return list.map(g => { const s = st[g.id]; return `<button class="lrow" data-a="guestEdit" data-g="${g.id}"><span><b>${esc(g.name)}</b> <span class="muted small">${esc(g.phone || '')}</span><div class="muted small">${s ? `визитов ${s.n} · последний ${fmtDate(s.last)}` : 'ещё не был'}${g.note ? ' · ' + esc(g.note) : ''}</div></span><b>${s ? money(s.sum) : ''}</b></button>`; }).join('');
+}
+function vGuests() {
+  return `<div class="row" style="margin-bottom:10px"><h2 style="margin:0">Постоянники</h2><button class="btn primary sm" data-a="guestNew">+ Новый</button></div>
+    <input id="gq" type="search" placeholder="Имя или телефон" value="${esc(ui.gq)}" autocomplete="off"><div class="card" style="margin-top:10px" id="glist">${guestListHtml()}</div>`;
+}
+function guestForm(g) {
+  return `<label>Имя<input id="g_name" value="${esc(g?.name)}" autocomplete="off"></label><label>Телефон<input id="g_phone" type="tel" value="${esc(g?.phone)}" autocomplete="off"></label><label>Заметка<input id="g_note" value="${esc(g?.note)}" placeholder="любимый вкус, и т.п." autocomplete="off"></label>`;
+}
+function readGuestForm() { return { name: $('#g_name').value.trim(), phone: $('#g_phone').value.trim(), note: $('#g_note').value.trim() }; }
+
+// ---------- позиции ----------
+function menuListHtml() {
+  const q = norm(ui.mq.trim());
+  let h = '';
+  for (const c of S.categories.concat([{ id: null, name: 'Без категории' }])) {
+    const ps = S.products.filter(p => (c.id ? p.catId === c.id : !S.categories.some(x => x.id === p.catId)) && (!q || norm(p.name).includes(q)));
+    if (!c.id && !ps.length) continue;
+    if (q && !ps.length) continue;
+    h += `<div class="card"><div class="row"><div class="mcat">${esc(c.name)}</div>${c.id ? `<button class="btn ghost sm" data-a="catEdit" data-c="${c.id}">✎</button>` : ''}</div>`;
+    h += ps.length ? ps.map(p => `<button class="lrow" data-a="prodEdit" data-p="${p.id}"><span>${esc(p.name)}${p.hot || p.coal ? `<div class="tags">${p.hot ? '<span class="tag hot">быстрая</span>' : ''}${p.coal ? '<span class="tag coal">угли</span>' : ''}</div>` : ''}</span><b>${money(p.price)}</b></button>`).join('') : '<div class="muted small" style="padding:6px 0">Пусто</div>';
+    h += `</div>`;
+  }
+  return h || '<div class="empty">Ничего не найдено</div>';
+}
+function vMenu() {
+  return `<div class="row" style="margin-bottom:10px"><h2 style="margin:0">Позиции</h2><span><button class="btn sm" data-a="catNew">+ Категория</button> <button class="btn primary sm" data-a="prodNew">+ Позиция</button></span></div>
+    <input id="mq" type="search" placeholder="Поиск" value="${esc(ui.mq)}" autocomplete="off"><div id="mlist" style="margin-top:10px">${menuListHtml()}</div>
+    <div class="muted small">«быстрая» — кнопка на экране стола. «угли» — включает таймер замен.</div>`;
+}
+function prodForm(p) {
+  return `<h2>${p ? 'Позиция' : 'Новая позиция'}</h2>
+    <label>Название<input id="p_name" value="${esc(p?.name)}" autocomplete="off"></label>
+    <label>Цена, ₽<input id="p_price" type="number" inputmode="numeric" min="0" value="${p ? p.price : ''}"></label>
+    <label>Категория<select id="p_cat">${S.categories.map(c => `<option value="${c.id}" ${(p ? p.catId : ui.lastCat) === c.id ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select></label>
+    <label class="chk"><input type="checkbox" id="p_hot" ${p?.hot ? 'checked' : ''}> Быстрая кнопка на экране стола</label>
+    <label class="chk"><input type="checkbox" id="p_coal" ${p?.coal ? 'checked' : ''}> На углях — таймер замен</label>
+    <label>Сколько кальянов в позиции (для акций вроде «3 за 2999»)<input id="p_pack" type="number" inputmode="numeric" min="1" value="${p?.pack || 1}"></label>
+    <button class="btn primary full big" data-a="prodSave" data-p="${p ? p.id : ''}">Сохранить</button>
+    ${p ? `<button class="btn full" data-a="prodDel" data-p="${p.id}">Удалить позицию</button>` : ''}
+    <button class="btn ghost full" data-a="closeModal">Отмена</button>`;
+}
+
+// ---------- ещё ----------
+let installEvt = null, wakeLock = null;
+function vMore() {
+  const st = S.settings;
+  return `<div class="card"><div class="h3">Резервная копия</div>
+      <div class="muted small" style="margin-bottom:8px">Все данные хранятся только в этом телефоне. Сохраняйте копию в конце смены — например, отправьте файл себе в Telegram.<br>Последняя копия: <b>${S.lastBackup ? fmtDate(S.lastBackup) + ' ' + fmtTime(S.lastBackup) : 'ещё не делали'}</b></div>
+      <button class="btn primary full big" data-a="backup">Сохранить копию</button>
+      <button class="btn full" data-a="restore">Восстановить из копии…</button></div>
+    <div class="card"><div class="h3">Столы (${S.tables.length})</div>${S.tables.map(t => `<div class="row" style="padding:4px 0"><span>Стол <b>${esc(t.name)}</b></span><span><button class="btn sm" data-a="tRen" data-t="${t.id}">✎</button> <button class="btn sm" data-a="tDel" data-t="${t.id}">✕</button></span></div>`).join('')}
+      <button class="btn full" data-a="tAdd">+ Добавить стол</button></div>
+    <div class="card"><div class="h3">Замены углей</div>
+      <label>На каких минутах менять угли (через запятую)<input id="changes" value="${st.changes.join(', ')}" inputmode="numeric"></label>
+      <label class="chk"><input type="checkbox" id="s_sound" ${st.sound ? 'checked' : ''}> Звук и вибрация при замене</label>
+      <label class="chk"><input type="checkbox" id="s_wake" ${st.wake ? 'checked' : ''}> Не гасить экран, пока программа открыта</label>
+      <button class="btn full" data-a="testBeep">Проверить звук</button></div>
+    ${installEvt ? `<div class="card"><button class="btn primary full big" data-a="install">Установить на телефон</button></div>` : ''}
+    <div class="muted small" style="text-align:center">Expert Lounge · версия ${VERSION}</div>`;
+}
+async function applyWake() {
+  try {
+    if (S.settings.wake && 'wakeLock' in navigator && document.visibilityState === 'visible') { if (!wakeLock) { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release', () => wakeLock = null); } }
+    else if (!S.settings.wake && wakeLock) { await wakeLock.release(); wakeLock = null; }
+  } catch (e) { }
+}
+
+// ---------- модалка ----------
+function modal(html) { const m = $('#modal'); m.innerHTML = `<div class="sheet">${html}</div>`; m.classList.add('on'); }
+function closeModal() { const m = $('#modal'); m.classList.remove('on'); m.innerHTML = ''; }
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+
+// ---------- таймеры, звук ----------
+let panelSig = null, actx = null;
+function unlockAudio() { try { if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); } catch (e) { } }
+function beep() {
+  if (!S.settings.sound) return;
+  try { navigator.vibrate && navigator.vibrate([400, 150, 400, 150, 400]); } catch (e) { }
+  if (!actx) return;
+  [0, 0.4, 0.8].forEach(t => { const o = actx.createOscillator(), g = actx.createGain(), s = actx.currentTime + t; o.frequency.value = 880; o.connect(g); g.connect(actx.destination); g.gain.setValueAtTime(0.0001, s); g.gain.exponentialRampToValueAtTime(0.5, s + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, s + 0.3); o.start(s); o.stop(s + 0.32); });
+}
+function renderChanges(now) {
+  const box = $('#changes'); if (!box) return;
+  const rows = [];
+  for (const o of S.orders) for (const it of o.items) { const c = coalInfo(it, now); if (c && (c.state === 'wait' || c.state === 'due')) rows.push({ o, it, c }); }
+  rows.sort((a, b) => a.c.due - b.c.due);
+  const sig = rows.map(r => r.it.id + r.c.state + r.c.n).join('|');
+  if (sig === panelSig) return;
+  panelSig = sig;
+  box.innerHTML = rows.length ? `<div class="card"><div class="h3">Ближайшие замены</div>${rows.map(r => `<div class="chrow ${r.c.state}"><div><b>Стол ${esc(tableName(r.o.tableId))}</b> · ${esc(r.it.name)} #${r.it.no}<div class="tm" data-o="${r.o.id}" data-i="${r.it.id}"></div></div><button class="btn ${r.c.state === 'due' ? 'warn' : ''} sm" data-a="coalDone" data-o="${r.o.id}" data-i="${r.it.id}">Заменил</button></div>`).join('')}</div>` : '';
+}
+function tick() {
+  if (!S) return;
+  const now = Date.now();
+  document.querySelectorAll('[data-since]').forEach(el => el.textContent = fmtDur(now - +el.dataset.since));
+  renderChanges(now);
+  document.querySelectorAll('.tm').forEach(el => {
+    const o = S.orders.find(x => x.id === el.dataset.o), it = o && o.items.find(x => x.id === el.dataset.i);
+    if (!it) return;
+    const c = coalInfo(it, now);
+    el.textContent = coalText(c); el.className = 'tm ' + c.state;
+    const row = el.closest('.item'); if (row) { row.classList.toggle('due', c.state === 'due'); const b = row.querySelector('[data-a=coalDone]'); if (b) b.classList.toggle('warn', c.state === 'due'); }
+  });
+  document.querySelectorAll('.tile[data-ot]').forEach(el => {
+    const o = S.orders.find(x => x.id === el.dataset.ot); if (!o) return;
+    const cs = o.items.map(i => coalInfo(i, now)).filter(Boolean);
+    const due = cs.filter(c => c.state === 'due').length, idle = cs.filter(c => c.state === 'idle').length;
+    el.classList.toggle('alert', due > 0); el.classList.toggle('idle', !due && idle > 0);
+    el.querySelector('.tw').textContent = due ? `замена! (${due})` : idle ? `▶ не вынесен (${idle})` : '';
+  });
+  let fire = false;
+  for (const o of S.orders) for (const it of o.items) { const c = coalInfo(it, now); if (c && c.state === 'due' && (it.alerted || 0) < c.n) { it.alerted = c.n; fire = true; } }
+  if (fire) { save(); beep(); }
+}
+
+// ---------- действия ----------
+function findItem(d) { const o = S.orders.find(x => x.id === d.o); return [o, o && o.items.find(x => x.id === d.i)]; }
+function openShift() { const sh = { id: uid(), openedAt: Date.now(), closedAt: null }; S.shifts.push(sh); S.shiftId = sh.id; toast('Смена открыта в ' + fmtTime(sh.openedAt)); }
+function addItem(o, p) {
+  if (p.coal) {
+    const n = Math.max(1, p.pack || 1), base = Math.floor(p.price / n);
+    let no = o.items.filter(i => i.pid === p.id).reduce((m, i) => Math.max(m, i.no || 0), 0);
+    for (let k = 0; k < n; k++) o.items.push({ id: uid(), pid: p.id, name: p.name, price: k === 0 ? p.price - base * (n - 1) : base, cat: p.catId, coal: true, qty: 1, no: ++no, startedAt: null, done: 0 });
+  } else {
+    const ex = o.items.find(i => i.pid === p.id && !i.coal && i.price === p.price);
+    if (ex) ex.qty++; else o.items.push({ id: uid(), pid: p.id, name: p.name, price: p.price, cat: p.catId, coal: false, qty: 1 });
+  }
+  toast('+ ' + p.name);
+}
+function parseGuest(o, g) { o.guestId = g ? g.id : null; o.guestName = g ? g.name : ''; }
+function pickGuestList(q) {
+  q = norm(q.trim());
+  const list = S.guests.filter(g => !q || norm(g.name).includes(q) || norm(g.phone).includes(q)).slice(0, 50);
+  return list.length ? list.map(g => `<button class="lrow" data-a="setGuest" data-g="${g.id}"><span><b>${esc(g.name)}</b> <span class="muted small">${esc(g.phone || '')}</span></span><span class="link">выбрать</span></button>`).join('') : `<div class="muted small" style="padding:8px 0">${S.guests.length ? 'Никого не нашли' : 'Постоянников пока нет — добавьте ниже'}</div>`;
+}
+
+const A = {
+  tab(d) { ui.view = d.v; if (d.v !== 'order') { ui.q = ''; ui.cat = null; } render(); window.scrollTo(0, 0); },
+  closeModal,
+  shiftOpen() { openShift(); commit(); },
+  shiftClose() {
+    const sh = curShift(); if (!sh) return;
+    if (S.orders.length) { modal(`<h2>Сначала закройте столы</h2><div class="muted">Открыты столы: <b>${S.orders.map(o => tableName(o.tableId)).join(', ')}</b>. Закройте их чеки, потом закрывайте смену.</div><button class="btn full" data-a="closeModal">Понятно</button>`); return; }
+    const now = Date.now(), r = calc(S.checks.filter(c => c.shiftId === sh.id));
+    modal(`<h2>Закрыть смену?</h2><div class="muted" style="margin-bottom:10px">${fmtDate(sh.openedAt)} ${fmtTime(sh.openedAt)} — ${fmtTime(now)} · ${fmtDur(now - sh.openedAt)}</div>${summaryHtml(r)}<button class="btn primary full big" data-a="shiftCloseOk">Закрыть смену</button><button class="btn ghost full" data-a="closeModal">Отмена</button>`);
+  },
+  shiftCloseOk() {
+    const sh = curShift(); sh.closedAt = Date.now(); S.shiftId = null; save(); render();
+    modal(`<h2>Смена закрыта</h2><div class="muted">${fmtTime(sh.openedAt)} — ${fmtTime(sh.closedAt)}. Не забудьте сохранить копию данных.</div><button class="btn primary full big" data-a="backup">Сохранить копию</button><button class="btn ghost full" data-a="closeModal">Позже</button>`);
+  },
+  tableTap(d) {
+    let o = orderByTable(d.t);
+    if (!o) {
+      if (!curShift()) { if (!confirm('Смена не открыта. Открыть смену сейчас?')) return; openShift(); }
+      o = { id: uid(), tableId: d.t, guestId: null, guestName: '', openedAt: Date.now(), shiftId: S.shiftId, items: [] };
+      S.orders.push(o); save();
+    }
+    ui.orderId = o.id; ui.q = ''; ui.cat = null; ui.view = 'order'; render(); window.scrollTo(0, 0);
+  },
+  add(d) { const o = S.orders.find(x => x.id === ui.orderId), p = S.products.find(x => x.id === d.p); if (!o || !p) return; addItem(o, p); ui.q = ''; commit(); },
+  cat(d) { ui.cat = d.scroll ? d.c : (ui.cat === d.c ? null : d.c); ui.q = ''; render(); if (d.scroll) { const r = $('#q'); if (r) r.scrollIntoView({ behavior: 'smooth', block: 'start' }); } },
+  coalStart(d) { const [, it] = findItem(d); if (!it) return; it.startedAt = Date.now(); it.done = 0; it.alerted = 0; commit(); },
+  coalDone(d) { const [, it] = findItem(d); if (!it || !it.startedAt) return; it.done = (it.done || 0) + 1; toast(`Замена ${it.done} отмечена`); commit(); },
+  itemDel(d) { const [o, it] = findItem(d); if (!it || !confirm(`Удалить «${it.name} #${it.no}» из заказа?`)) return; o.items = o.items.filter(x => x !== it); commit(); },
+  qty(d) { const [o, it] = findItem(d); if (!it) return; it.qty += +d.d; if (it.qty <= 0) { if (!confirm(`Убрать «${it.name}» из заказа?`)) { it.qty = 1; return; } o.items = o.items.filter(x => x !== it); } commit(); },
+  cancelOrder() { const o = S.orders.find(x => x.id === ui.orderId); if (!o || o.items.length) return; S.orders = S.orders.filter(x => x !== o); ui.view = 'tables'; commit(); },
+  moveAsk() {
+    const o = S.orders.find(x => x.id === ui.orderId); if (!o) return;
+    const free = S.tables.filter(t => !orderByTable(t.id));
+    modal(`<h2>Пересадить со стола ${esc(tableName(o.tableId))}</h2>${free.length ? `<div class="grid">${free.map(t => `<button class="tile free" data-a="moveTo" data-t="${t.id}"><span class="tn">${esc(t.name)}</span></button>`).join('')}</div>` : '<div class="muted">Свободных столов нет</div>'}<button class="btn ghost full" data-a="closeModal">Отмена</button>`);
+  },
+  moveTo(d) { const o = S.orders.find(x => x.id === ui.orderId); if (!o || orderByTable(d.t)) return; o.tableId = d.t; closeModal(); toast('Пересадили на стол ' + tableName(d.t)); commit(); },
+  pickGuest() {
+    const o = S.orders.find(x => x.id === ui.orderId); if (!o) return;
+    modal(`<h2>Кто за столом ${esc(tableName(o.tableId))}?</h2><input id="pgq" type="search" placeholder="Имя или телефон постоянника" autocomplete="off"><div id="pglist" style="margin:8px 0">${pickGuestList('')}</div>
+      <div class="sep"></div><div class="h3">Новый постоянник</div>${guestForm(null)}<button class="btn primary full" data-a="newGuestInOrder">Добавить и посадить</button>
+      ${o.guestId ? '<button class="btn full" data-a="setGuest" data-g="">Сделать «без имени»</button>' : ''}<button class="btn ghost full" data-a="closeModal">Отмена</button>`);
+  },
+  setGuest(d) { const o = S.orders.find(x => x.id === ui.orderId); if (!o) return; parseGuest(o, d.g ? guestById(d.g) : null); closeModal(); commit(); },
+  newGuestInOrder() {
+    const o = S.orders.find(x => x.id === ui.orderId), f = readGuestForm(); if (!o) return;
+    if (!f.name) { toast('Введите имя'); return; }
+    let g = f.phone && S.guests.find(x => x.phone && x.phone.replace(/\D/g, '') === f.phone.replace(/\D/g, ''));
+    if (g) toast('Такой телефон уже есть: ' + g.name);
+    else { g = { id: uid(), createdAt: Date.now(), ...f }; S.guests.push(g); }
+    parseGuest(o, g); closeModal(); commit();
+  },
+  closeAsk() {
+    const o = S.orders.find(x => x.id === ui.orderId); if (!o) return;
+    const now = Date.now();
+    modal(`<h2>Стол ${esc(tableName(o.tableId))} · ${esc(guestName(o))}</h2><div class="muted" style="margin-bottom:8px">Сидели ${fmtDur(now - o.openedAt)} (${fmtTime(o.openedAt)}–${fmtTime(now)})</div>
+      ${o.items.map(i => `<div class="ln"><span>${esc(i.name)}${i.coal ? ' #' + i.no : ''}${i.qty > 1 ? ' × ' + i.qty : ''}</span><span>${money(i.price * i.qty)}</span></div>`).join('')}
+      <div class="ln total"><span>К оплате</span><span>${money(orderTotal(o))}</span></div>
+      <div class="row2"><button class="btn primary big" data-a="pay" data-m="card">Карта</button><button class="btn primary big" data-a="pay" data-m="cash">Наличные</button></div>
+      <button class="btn ghost full" data-a="closeModal">Отмена</button>`);
+  },
+  pay(d) {
+    const o = S.orders.find(x => x.id === ui.orderId); if (!o) return;
+    const total = orderTotal(o);
+    S.checks.push({ id: uid(), shiftId: o.shiftId || S.shiftId, tableId: o.tableId, tableName: tableName(o.tableId), guestId: o.guestId, guestName: o.guestId ? guestName(o) : '', openedAt: o.openedAt, closedAt: Date.now(), pay: d.m, total, items: o.items.map(i => ({ pid: i.pid, name: i.name, price: i.price, cat: i.cat, qty: i.qty })) });
+    S.orders = S.orders.filter(x => x !== o);
+    closeModal(); ui.view = 'tables'; commit(); window.scrollTo(0, 0);
+    toast(`Стол ${tableName(o.tableId)} закрыт · ${money(total)} · ${d.m === 'card' ? 'карта' : 'наличные'}`);
+  },
+  statsP(d) { ui.statsP = d.p; ui.statsShift = null; render(); },
+  statsShift(d) { ui.statsP = 'shift'; ui.statsShift = d.s; render(); window.scrollTo(0, 0); },
+  checkOpen(d) {
+    const c = S.checks.find(x => x.id === d.c); if (!c) return;
+    modal(`<h2>Чек · стол ${esc(c.tableName)}</h2><div class="muted" style="margin-bottom:8px">${esc(c.guestName || 'Без имени')} · ${fmtDate(c.closedAt)} ${fmtTime(c.openedAt)}–${fmtTime(c.closedAt)}</div>
+      ${c.items.map(i => `<div class="ln"><span>${esc(i.name)}${i.qty > 1 ? ' × ' + i.qty : ''}</span><span>${money(i.price * i.qty)}</span></div>`).join('')}
+      <div class="ln total"><span>Итого</span><span>${money(c.total)}</span></div>
+      <div class="row2"><button class="btn ${c.pay === 'card' ? 'primary' : ''}" data-a="checkPay" data-c="${c.id}" data-m="card">Карта</button><button class="btn ${c.pay === 'cash' ? 'primary' : ''}" data-a="checkPay" data-c="${c.id}" data-m="cash">Наличные</button></div>
+      <button class="btn full" data-a="checkDel" data-c="${c.id}">Удалить чек</button><button class="btn ghost full" data-a="closeModal">Закрыть</button>`);
+  },
+  checkPay(d) { const c = S.checks.find(x => x.id === d.c); if (!c) return; c.pay = d.m; save(); render(); A.checkOpen(d); },
+  checkDel(d) { if (!confirm('Удалить этот чек? Он пропадёт из статистики.')) return; S.checks = S.checks.filter(x => x.id !== d.c); closeModal(); commit(); },
+  guestNew() { modal(`<h2>Новый постоянник</h2>${guestForm(null)}<button class="btn primary full big" data-a="guestSave" data-g="">Сохранить</button><button class="btn ghost full" data-a="closeModal">Отмена</button>`); },
+  guestEdit(d) { const g = guestById(d.g); if (!g) return; modal(`<h2>${esc(g.name)}</h2>${guestForm(g)}<button class="btn primary full big" data-a="guestSave" data-g="${g.id}">Сохранить</button><button class="btn full" data-a="guestDel" data-g="${g.id}">Удалить</button><button class="btn ghost full" data-a="closeModal">Отмена</button>`); },
+  guestSave(d) {
+    const f = readGuestForm(); if (!f.name) { toast('Введите имя'); return; }
+    if (d.g) Object.assign(guestById(d.g), f); else S.guests.push({ id: uid(), createdAt: Date.now(), ...f });
+    closeModal(); commit();
+  },
+  guestDel(d) { const g = guestById(d.g); if (!g || !confirm(`Удалить «${g.name}» из базы? Его чеки останутся в статистике.`)) return; S.guests = S.guests.filter(x => x !== g); closeModal(); commit(); },
+  prodNew() { modal(prodForm(null)); },
+  prodEdit(d) { modal(prodForm(S.products.find(p => p.id === d.p))); },
+  prodSave(d) {
+    const name = $('#p_name').value.trim(), price = Math.max(0, Math.round(+$('#p_price').value || 0));
+    if (!name) { toast('Введите название'); return; }
+    const f = { name, price, catId: $('#p_cat').value, hot: $('#p_hot').checked, coal: $('#p_coal').checked, pack: Math.max(1, Math.round(+$('#p_pack').value || 1)) };
+    ui.lastCat = f.catId;
+    if (d.p) Object.assign(S.products.find(p => p.id === d.p), f); else S.products.push({ id: uid(), ...f });
+    closeModal(); commit(); toast('Сохранено');
+  },
+  prodDel(d) { const p = S.products.find(x => x.id === d.p); if (!p || !confirm(`Удалить «${p.name}»? Старые чеки и статистика сохранятся.`)) return; S.products = S.products.filter(x => x !== p); closeModal(); commit(); },
+  catNew() { const n = prompt('Название категории'); if (!n || !n.trim()) return; S.categories.push({ id: uid(), name: n.trim() }); commit(); },
+  catEdit(d) {
+    const c = S.categories.find(x => x.id === d.c); if (!c) return;
+    const n = prompt('Новое название категории (оставьте пустым, чтобы удалить)', c.name); if (n === null) return;
+    if (n.trim()) { c.name = n.trim(); c.hot = confirm(`Показывать «${c.name}» быстрой кнопкой на экране стола?`); commit(); return; }
+    if (S.products.some(p => p.catId === c.id)) { alert('В категории есть позиции. Сначала перенесите или удалите их.'); return; }
+    if (confirm(`Удалить категорию «${c.name}»?`)) { S.categories = S.categories.filter(x => x !== c); commit(); }
+  },
+  tAdd() { const nums = S.tables.map(t => parseInt(t.name)).filter(n => !isNaN(n)); const name = prompt('Название стола', String(nums.length ? Math.max(...nums) + 1 : S.tables.length + 1)); if (!name || !name.trim()) return; S.tables.push({ id: uid(), name: name.trim() }); commit(); },
+  tRen(d) { const t = S.tables.find(x => x.id === d.t); const n = prompt('Название стола', t.name); if (!n || !n.trim()) return; t.name = n.trim(); commit(); },
+  tDel(d) { const t = S.tables.find(x => x.id === d.t); if (orderByTable(t.id)) { alert('За этим столом сейчас сидят — сначала закройте его.'); return; } if (!confirm(`Удалить стол ${t.name}?`)) return; S.tables = S.tables.filter(x => x !== t); commit(); },
+  testBeep() { unlockAudio(); const s = S.settings.sound; S.settings.sound = true; beep(); S.settings.sound = s; },
+  async backup() {
+    const name = `kalyan-kopiya-${ymd(new Date())}.txt`;
+    const file = new File([JSON.stringify({ app: APP, v: 1, at: Date.now(), state: S })], name, { type: 'text/plain' });
+    const done = () => { S.lastBackup = Date.now(); save(); if (ui.view === 'more') render(); };
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], title: name }); done(); toast('Копия отправлена'); return; }
+      catch (e) { if (e.name === 'AbortError') return; }
+    }
+    const a = document.createElement('a'); a.href = URL.createObjectURL(file); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+    done(); toast('Копия сохранена в «Загрузки»');
+  },
+  restore() { $('#restoreFile').value = ''; $('#restoreFile').click(); },
+  async install() { if (!installEvt) return; installEvt.prompt(); await installEvt.userChoice; installEvt = null; render(); }
+};
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-a]'); if (!el) return;
+  const f = A[el.dataset.a]; if (f) f(el.dataset, el, e);
+});
+document.addEventListener('pointerdown', unlockAudio);
+document.addEventListener('input', e => {
+  const id = e.target.id, v = e.target.value;
+  if (id === 'q') { ui.q = v; if (ui.cat) { ui.cat = null; document.querySelectorAll('.chip.on').forEach(c => c.classList.remove('on')); } $('#results').innerHTML = resultsHtml(); }
+  else if (id === 'gq') { ui.gq = v; $('#glist').innerHTML = guestListHtml(); }
+  else if (id === 'mq') { ui.mq = v; $('#mlist').innerHTML = menuListHtml(); }
+  else if (id === 'pgq') { $('#pglist').innerHTML = pickGuestList(v); }
+});
+document.addEventListener('change', async e => {
+  const id = e.target.id;
+  if (id === 'sf') { ui.statsFrom = e.target.value; render(); }
+  else if (id === 'st') { ui.statsTo = e.target.value; render(); }
+  else if (id === 'changes') {
+    const arr = e.target.value.split(/[ ,;]+/).map(Number).filter(n => n > 0).sort((a, b) => a - b);
+    if (!arr.length) { toast('Укажите минуты, например: 30, 60'); render(); return; }
+    S.settings.changes = [...new Set(arr)]; commit(); toast('Замены: ' + S.settings.changes.join(', ') + ' мин');
+  }
+  else if (id === 's_sound') { S.settings.sound = e.target.checked; save(); }
+  else if (id === 's_wake') { S.settings.wake = e.target.checked; save(); applyWake(); }
+  else if (id === 'restoreFile') {
+    const f = e.target.files[0]; if (!f) return;
+    try {
+      const data = JSON.parse(await f.text());
+      if (data.app !== APP || !data.state || !Array.isArray(data.state.products)) throw new Error('это не копия Expert Lounge');
+      if (!confirm(`Восстановить копию от ${fmtDate(data.at)} ${fmtTime(data.at)}? Текущие данные в телефоне будут заменены.`)) return;
+      S = migrate(data.state); await save(); ui.view = 'tables'; render(); toast('Данные восстановлены');
+    } catch (err) { alert('Не удалось прочитать файл: ' + err.message); }
+  }
+});
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { applyWake(); tick(); } });
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; if (ui.view === 'more') render(); });
+
+(async function start() {
+  try { await DB.open(); S = await DB.get('state'); } catch (e) { alert('Не удалось открыть хранилище: ' + e.message); }
+  S = S ? migrate(S) : defaultState();
+  await save();
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) { }
+  render(); applyWake();
+  setInterval(tick, 1000);
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(() => { });
+})();
+</script>
+</body>
+</html>
