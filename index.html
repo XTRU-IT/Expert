@@ -61,14 +61,14 @@ label.chk input{width:22px;height:22px;min-height:0;margin:0;accent-color:var(--
 #tabs button.on{color:var(--gold)}
 .shiftbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .shiftbar.off{border-color:var(--goldline)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:12px}
-.tile{background:linear-gradient(160deg,rgba(28,32,50,.85),rgba(16,18,30,.8));border:1px solid var(--line2);border-radius:24px;min-height:108px;padding:10px 12px;display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:1px;position:relative;overflow:hidden}
+.grid{display:grid;grid-template-columns:repeat(var(--cols,5),minmax(0,1fr));gap:8px}
+.tile{background:linear-gradient(160deg,rgba(28,32,50,.85),rgba(16,18,30,.8));border:1px solid var(--line2);border-radius:18px;min-height:112px;padding:8px 7px;min-width:0;display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:1px;position:relative;overflow:hidden}
 .tile:active{transform:scale(.97)}
-.tile .tn{font:800 30px/1.05 var(--serif)}
-.tile .ts{font-size:12px;color:var(--mu)}
-.tile .tg{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-.tile .tsum{font-weight:800;color:var(--gold)}
-.tile .tw{font-size:12px;font-weight:700}
+.tile .tn{font:800 26px/1.05 var(--serif)}
+.tile .ts{font-size:11px;color:var(--mu);white-space:nowrap}
+.tile .tg{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.tile .tsum{font-weight:800;font-size:13px;color:var(--gold);white-space:nowrap}
+.tile .tw{font-size:11px;font-weight:700;line-height:1.2}
 .tile.free{background:rgba(18,20,32,.45);border-color:var(--line)}
 .tile.free .tn{color:var(--dim)}
 .tile.busy{border-color:var(--goldline);box-shadow:0 0 24px -8px rgba(220,181,76,.4)}
@@ -173,6 +173,7 @@ const fmtTime = ts => { const d = new Date(ts); return pad(d.getHours()) + ':' +
 const fmtDate = ts => { const d = new Date(ts); return pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + '.' + d.getFullYear(); };
 const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
 function fmtDur(ms) { const m = Math.max(0, Math.floor(ms / 60000)), h = Math.floor(m / 60); return h ? `${h} ч ${m % 60} мин` : `${m} мин`; }
+function fmtShort(ms) { const m = Math.max(0, Math.floor(ms / 60000)), h = Math.floor(m / 60); return h ? `${h}ч ${m % 60}м` : `${m} мин`; }
 function fmtClock(ms) { const s = Math.floor(Math.abs(ms) / 1000), h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60; return (h ? h + ':' + pad(m) : m) + ':' + pad(s % 60); }
 let toastT;
 function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('on'), 1800); }
@@ -213,7 +214,7 @@ function defaultState() {
       p('Забивка с собой', 399, 'c_more'), p('Кальян в аренду (сутки)', 999, 'c_more'), p('Уголь 72 шт (25 мм)', 699, 'c_more'),
       p('PS5 депозит (с человека)', 1000, 'c_more'), p('Пробковый сбор: б/а и пиво (ед.)', 249, 'c_more'), p('Пробковый сбор: остальное', 499, 'c_more')
     ],
-    tables: Array.from({ length: 10 }, (_, i) => ({ id: 't' + (i + 1), name: String(i + 1) })),
+    tables: Array.from({ length: 9 }, (_, i) => ({ id: 't' + (i + 1), name: String(i + 1) })),
     guests: [], orders: [], checks: [], shifts: [], shiftId: null,
     settings: { changes: [30, 60], sound: true, wake: false },
     lastBackup: null
@@ -276,11 +277,11 @@ function vTables() {
     const cs = S.checks.filter(c => c.shiftId === sh.id);
     h += `<div class="card shiftbar"><div><b>Смена с ${fmtTime(sh.openedAt)}</b> <span class="muted small" style="white-space:nowrap">· <span data-since="${sh.openedAt}"></span></span><div class="muted small">${money(cs.reduce((a, c) => a + c.total, 0))} · чеков ${cs.length} · открыто столов ${S.orders.length}</div></div><button class="btn sm" data-a="shiftClose">Закрыть смену</button></div>`;
   }
-  h += `<div id="changes"></div><div class="grid">`;
+  h += `<div id="changes"></div><div class="grid" style="--cols:${Math.max(1, Math.ceil(S.tables.length / 2))}">`;
   for (const t of S.tables) {
     const o = orderByTable(t.id);
     if (!o) h += `<button class="tile free" data-a="tableTap" data-t="${t.id}"><span class="tn">${esc(t.name)}</span><span class="ts">свободен</span></button>`;
-    else h += `<button class="tile busy" data-a="tableTap" data-t="${t.id}" data-ot="${o.id}"><span class="tn">${esc(t.name)}</span><span class="tg">${esc(guestName(o))}</span><span class="tsum">${money(orderTotal(o))}</span><span class="ts" data-since="${o.openedAt}"></span><span class="tw"></span></button>`;
+    else h += `<button class="tile busy" data-a="tableTap" data-t="${t.id}" data-ot="${o.id}"><span class="tn">${esc(t.name)}</span><span class="tg">${esc(guestName(o))}</span><span class="tsum">${money(orderTotal(o))}</span><span class="ts" data-since="${o.openedAt}" data-short="1"></span><span class="tw"></span></button>`;
   }
   return h + `</div>`;
 }
@@ -496,7 +497,7 @@ function renderChanges(now) {
 function tick() {
   if (!S) return;
   const now = Date.now();
-  document.querySelectorAll('[data-since]').forEach(el => el.textContent = fmtDur(now - +el.dataset.since));
+  document.querySelectorAll('[data-since]').forEach(el => { const ms = now - +el.dataset.since; el.textContent = el.dataset.short ? fmtShort(ms) : fmtDur(ms); });
   renderChanges(now);
   document.querySelectorAll('.tm').forEach(el => {
     const o = S.orders.find(x => x.id === el.dataset.o), it = o && o.items.find(x => x.id === el.dataset.i);
@@ -510,7 +511,7 @@ function tick() {
     const cs = o.items.map(i => coalInfo(i, now)).filter(Boolean);
     const due = cs.filter(c => c.state === 'due').length, idle = cs.filter(c => c.state === 'idle').length;
     el.classList.toggle('alert', due > 0); el.classList.toggle('idle', !due && idle > 0);
-    el.querySelector('.tw').textContent = due ? `замена! (${due})` : idle ? `▶ не вынесен (${idle})` : '';
+    el.querySelector('.tw').textContent = due ? `замена! ×${due}` : idle ? `▶ ждёт ×${idle}` : '';
   });
   let fire = false;
   for (const o of S.orders) for (const it of o.items) { const c = coalInfo(it, now); if (c && c.state === 'due' && (it.alerted || 0) < c.n) { it.alerted = c.n; fire = true; } }
