@@ -454,7 +454,8 @@ function vMore() {
     <div class="card"><div class="h3">Столы (${S.tables.length})</div>${S.tables.map(t => `<div class="row" style="padding:4px 0"><span>Стол <b>${esc(t.name)}</b></span><span><button class="btn sm" data-a="tRen" data-t="${t.id}">✎</button> <button class="btn sm" data-a="tDel" data-t="${t.id}">✕</button></span></div>`).join('')}
       <button class="btn full" data-a="tAdd">+ Добавить стол</button></div>
     <div class="card"><div class="h3">Замены углей</div>
-      <label>На каких минутах менять угли (через запятую)<input id="changes" value="${st.changes.join(', ')}" inputmode="numeric"></label>
+      <div class="muted small">Минуты считаются с момента, когда кальян вынесли (кнопка ▶).</div>
+      <div class="row2" style="margin-top:4px"><label>Замена 1, мин<input id="ch1" type="number" inputmode="numeric" min="1" value="${st.changes[0] || ''}"></label><label>Замена 2, мин<input id="ch2" type="number" inputmode="numeric" min="1" value="${st.changes[1] || ''}" placeholder="нет"></label></div>
       <label class="chk"><input type="checkbox" id="s_sound" ${st.sound ? 'checked' : ''}> Звук и вибрация при замене</label>
       <label class="chk"><input type="checkbox" id="s_wake" ${st.wake ? 'checked' : ''}> Не гасить экран, пока программа открыта</label>
       <button class="btn full" data-a="testBeep">Проверить звук</button></div>
@@ -680,10 +681,12 @@ document.addEventListener('change', async e => {
   const id = e.target.id;
   if (id === 'sf') { ui.statsFrom = e.target.value; render(); }
   else if (id === 'st') { ui.statsTo = e.target.value; render(); }
-  else if (id === 'changes') {
-    const arr = e.target.value.split(/[ ,;]+/).map(Number).filter(n => n > 0).sort((a, b) => a - b);
-    if (!arr.length) { toast('Укажите минуты, например: 30, 60'); render(); return; }
-    S.settings.changes = [...new Set(arr)]; commit(); toast('Замены: ' + S.settings.changes.join(', ') + ' мин');
+  else if (id === 'ch1' || id === 'ch2') {
+    const c1 = Math.round(+$('#ch1').value), c2 = Math.round(+$('#ch2').value);
+    if (!(c1 > 0)) { toast('Укажите минуты для замены 1, например 30'); render(); return; }
+    if (c2 && c2 <= c1) { toast('Замена 2 должна быть позже замены 1'); render(); return; }
+    S.settings.changes = c2 > 0 ? [c1, c2] : [c1]; commit();
+    toast(c2 > 0 ? `Замены: на ${c1} и ${c2} мин` : `Одна замена: на ${c1} мин`);
   }
   else if (id === 's_sound') { S.settings.sound = e.target.checked; save(); }
   else if (id === 's_wake') { S.settings.wake = e.target.checked; save(); applyWake(); }
