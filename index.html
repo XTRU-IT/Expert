@@ -28,7 +28,7 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;background:
 main{padding:14px 16px 24px;max-width:760px;margin:0 auto}
 main.withfoot{padding-bottom:120px}
 h1{margin:0;font:800 25px/1.1 var(--serif);letter-spacing:.06em;text-transform:uppercase;background:linear-gradient(180deg,#f0d27a,#b98f22);-webkit-background-clip:text;background-clip:text;color:transparent}
-h2{margin:0 0 12px;font:700 21px/1.2 var(--serif);letter-spacing:.02em}
+h2{margin:0 0 12px;font:700 21px/1.2 var(--serif);letter-spacing:.02em;overflow-wrap:anywhere}
 .h3{font-weight:700;margin:0 0 10px;font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.12em}
 .muted{color:var(--mu)}.small{font-size:13px}.gold{color:var(--gold)}
 .brand{text-align:center;margin:10px 2px 16px}
@@ -46,7 +46,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .btn.sm{min-height:38px;padding:6px 14px;font-size:14px}
 .btn.full{width:100%}
 .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 4px}
+.row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0 4px}
+.row2 input{min-width:0}
 input,select,textarea{font:inherit;color:var(--tx);background:rgba(6,10,24,.55);border:1px solid var(--line2);border-radius:16px;padding:12px 16px;width:100%;min-height:50px}
 input::placeholder{color:var(--dim)}
 input:focus,select:focus{outline:none;border-color:var(--goldline);box-shadow:0 0 0 3px rgba(220,181,76,.12)}
@@ -64,11 +65,12 @@ label.chk input{width:22px;height:22px;min-height:0;margin:0;accent-color:var(--
 .grid{display:grid;grid-template-columns:repeat(var(--cols,5),minmax(0,1fr));gap:8px}
 .tile{background:linear-gradient(160deg,rgba(28,32,50,.85),rgba(16,18,30,.8));border:1px solid var(--line2);border-radius:18px;min-height:112px;padding:8px 7px;min-width:0;display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:1px;position:relative;overflow:hidden}
 .tile:active{transform:scale(.97)}
-.tile .tn{font:800 26px/1.05 var(--serif)}
-.tile .ts{font-size:11px;color:var(--mu);white-space:nowrap}
-.tile .tg{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-.tile .tsum{font-weight:800;font-size:13px;color:var(--gold);white-space:nowrap}
-.tile .tw{font-size:11px;font-weight:700;line-height:1.2}
+.tile{container-type:inline-size}
+.tile .tn{font:800 min(26px,34cqw)/1.05 var(--serif)}
+.tile .ts{font-size:min(11px,15cqw);color:var(--mu);white-space:nowrap}
+.tile .tg{font-size:min(12px,16cqw);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.tile .tsum{font-weight:800;font-size:min(13px,16cqw);color:var(--gold);white-space:nowrap}
+.tile .tw{font-size:min(11px,15cqw);font-weight:700;line-height:1.2}
 .tile.free{background:rgba(18,20,32,.45);border-color:var(--line)}
 .tile.free .tn{color:var(--dim)}
 .tile.busy{border-color:var(--goldline);box-shadow:0 0 24px -8px rgba(220,181,76,.4)}
@@ -80,6 +82,8 @@ label.chk input{width:22px;height:22px;min-height:0;margin:0;accent-color:var(--
 .chrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
 .chrow:first-of-type{border-top:0;padding-top:0}
 .chrow.due b{color:var(--warn)}
+.chrow>div{min-width:0;overflow-wrap:anywhere}
+.chrow>.btn{flex:0 0 auto}
 .tm{font-size:13px;color:var(--mu);font-variant-numeric:tabular-nums}
 .tm.due{color:var(--warn);font-weight:700}
 .tm.wait{color:var(--ok)}
@@ -97,6 +101,7 @@ label.chk input{width:22px;height:22px;min-height:0;margin:0;accent-color:var(--
 .seat.add{border-style:dashed;background:transparent}
 .seat.add b{color:var(--gold)}
 .guest{display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer}
+.guest>span:first-child{min-width:0;overflow-wrap:anywhere}
 .link{color:var(--gold);font-size:14px;font-weight:600;white-space:nowrap}
 .hot{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
 .hb{background:linear-gradient(160deg,rgba(30,32,48,.9),rgba(18,20,32,.85));border:1px solid var(--goldline);border-radius:20px;min-height:66px;padding:10px 14px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;text-align:left;font-weight:700}
@@ -144,7 +149,9 @@ th{color:var(--mu);font-weight:600;font-size:12px;text-transform:uppercase;lette
 td.r,th.r{text-align:right;white-space:nowrap}
 .lrow{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;background:none;border:0;border-top:1px solid var(--line);padding:12px 0;text-align:left;min-height:52px}
 .lrow:first-child{border-top:0}
-.lrow b{white-space:nowrap}
+.lrow>b{white-space:nowrap;flex:0 0 auto}
+.lrow>span:first-child{min-width:0;overflow-wrap:anywhere}
+.lrow>.link{flex:0 0 auto}
 .tags{margin-top:4px;display:flex;gap:6px}
 .tag{display:inline-block;font-size:11px;line-height:16px;padding:2px 8px;border-radius:999px;border:1px solid var(--line2);color:var(--mu);font-weight:600}
 .tag.hot{color:#e6dcc4;background:var(--goldbg);border-color:transparent}.tag.coal{color:var(--warn);border-color:rgba(255,95,110,.45)}
@@ -507,10 +514,11 @@ function renderChanges(now) {
   const rows = [];
   for (const o of S.orders) for (const it of o.items) { const c = coalInfo(it, now); if (c && (c.state === 'wait' || c.state === 'due')) rows.push({ o, it, c }); }
   rows.sort((a, b) => a.c.due - b.c.due);
-  const sig = rows.map(r => r.it.id + r.c.state + r.c.n).join('|');
+  const shown = ui.allChanges ? rows : rows.slice(0, 3), extra = rows.length - shown.length;
+  const sig = rows.map(r => r.it.id + r.c.state + r.c.n).join('|') + (ui.allChanges ? '+' : '');
   if (sig === panelSig) return;
   panelSig = sig;
-  box.innerHTML = rows.length ? `<div class="card"><div class="h3">Ближайшие замены</div>${rows.map(r => `<div class="chrow ${r.c.state}"><div><b>Стол ${esc(tableName(r.o.tableId))}</b>${ordersByTable(r.o.tableId).length > 1 ? ' · ' + esc(guestLabel(r.o)) : ''} · ${esc(r.it.name)} #${r.it.no}<div class="tm" data-o="${r.o.id}" data-i="${r.it.id}"></div></div><button class="btn ${r.c.state === 'due' ? 'warn' : ''} sm" data-a="coalDone" data-o="${r.o.id}" data-i="${r.it.id}">Заменил</button></div>`).join('')}</div>` : '';
+  box.innerHTML = rows.length ? `<div class="card"><div class="h3">Ближайшие замены · ${rows.length}</div>${shown.map(r => `<div class="chrow ${r.c.state}"><div><b>Стол ${esc(tableName(r.o.tableId))}</b>${ordersByTable(r.o.tableId).length > 1 ? ' · ' + esc(guestLabel(r.o)) : ''} · ${esc(r.it.name)} #${r.it.no}<div class="tm" data-o="${r.o.id}" data-i="${r.it.id}"></div></div><button class="btn ${r.c.state === 'due' ? 'warn' : ''} sm" data-a="coalDone" data-o="${r.o.id}" data-i="${r.it.id}">Заменил</button></div>`).join('')}${rows.length > 3 ? `<button class="btn ghost sm full" data-a="toggleChanges">${ui.allChanges ? 'Свернуть' : 'Ещё ' + extra + ' — показать все'}</button>` : ''}</div>` : '';
 }
 function tick() {
   if (!S) return;
@@ -560,6 +568,7 @@ function pickGuestList(q) {
 const A = {
   tab(d) { ui.view = d.v; if (d.v !== 'order') { ui.q = ''; ui.cat = null; } render(); window.scrollTo(0, 0); },
   closeModal,
+  toggleChanges() { ui.allChanges = !ui.allChanges; panelSig = null; tick(); },
   shiftOpen() { openShift(); commit(); },
   shiftClose() {
     const sh = curShift(); if (!sh) return;
