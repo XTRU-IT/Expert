@@ -87,6 +87,15 @@ label.chk input{width:22px;height:22px;min-height:0;margin:0;accent-color:var(--
 .ohead{display:flex;align-items:center;gap:10px;margin-bottom:6px}
 .back{width:46px;height:46px;border-radius:50%;background:rgba(20,23,36,.8);border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:22px;flex:0 0 auto}
 .otitle{font:800 24px/1.1 var(--serif);flex:1;letter-spacing:.03em}
+.seats{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px;scrollbar-width:none}
+.seats::-webkit-scrollbar{display:none}
+.seat{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-start;gap:1px;background:var(--card);border:1px solid var(--line2);border-radius:16px;padding:8px 14px;min-width:96px;text-align:left}
+.seat b{font-size:14px;white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.seat small{font-size:12px;color:var(--mu);font-weight:600}
+.seat.on{border-color:var(--goldline);background:var(--goldbg)}
+.seat.on small{color:var(--gold)}
+.seat.add{border-style:dashed;background:transparent}
+.seat.add b{color:var(--gold)}
 .guest{display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer}
 .link{color:var(--gold);font-size:14px;font-weight:600;white-space:nowrap}
 .hot{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
@@ -240,6 +249,12 @@ const orderByTable = id => S.orders.find(o => o.tableId === id);
 const orderTotal = o => o.items.reduce((a, i) => a + i.price * i.qty, 0);
 const guestById = id => S.guests.find(g => g.id === id);
 function guestName(o) { if (!o.guestId) return 'Без имени'; const g = guestById(o.guestId); return g ? g.name : (o.guestName || 'Гость'); }
+const ordersByTable = id => S.orders.filter(o => o.tableId === id).sort((a, b) => (a.seat || 1) - (b.seat || 1) || a.openedAt - b.openedAt);
+// «Гость 2» нужен, только когда за столом несколько безымянных чеков
+function guestLabel(o) { if (o.guestId) return guestName(o); return ordersByTable(o.tableId).length > 1 ? 'Гость ' + (o.seat || 1) : 'Без имени'; }
+const nextSeat = tableId => S.orders.filter(o => o.tableId === tableId).reduce((m, o) => Math.max(m, o.seat || 1), 0) + 1;
+function newOrder(tableId) { const o = { id: uid(), tableId, seat: nextSeat(tableId), guestId: null, guestName: '', openedAt: Date.now(), shiftId: S.shiftId, items: [] }; S.orders.push(o); return o; }
+const guestsWord = n => n % 10 === 1 && n % 100 !== 11 ? 'гость' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'гостя' : 'гостей';
 
 function coalInfo(it, now) {
   if (!it.coal) return null;
@@ -275,13 +290,14 @@ function vTables() {
     h += `<div class="card shiftbar off"><div><b>Смена закрыта</b><div class="muted small">Откройте смену, чтобы сажать гостей</div></div><button class="btn primary" data-a="shiftOpen">Открыть смену</button></div>`;
   } else {
     const cs = S.checks.filter(c => c.shiftId === sh.id);
-    h += `<div class="card shiftbar"><div><b>Смена с ${fmtTime(sh.openedAt)}</b> <span class="muted small" style="white-space:nowrap">· <span data-since="${sh.openedAt}"></span></span><div class="muted small">${money(cs.reduce((a, c) => a + c.total, 0))} · чеков ${cs.length} · открыто столов ${S.orders.length}</div></div><button class="btn sm" data-a="shiftClose">Закрыть смену</button></div>`;
+    h += `<div class="card shiftbar"><div><b>Смена с ${fmtTime(sh.openedAt)}</b> <span class="muted small" style="white-space:nowrap">· <span data-since="${sh.openedAt}"></span></span><div class="muted small">${money(cs.reduce((a, c) => a + c.total, 0))} · чеков ${cs.length} · открыто столов ${new Set(S.orders.map(o => o.tableId)).size}</div></div><button class="btn sm" data-a="shiftClose">Закрыть смену</button></div>`;
   }
   h += `<div id="changes"></div><div class="grid" style="--cols:${Math.max(1, Math.ceil(S.tables.length / 2))}">`;
   for (const t of S.tables) {
-    const o = orderByTable(t.id);
-    if (!o) h += `<button class="tile free" data-a="tableTap" data-t="${t.id}"><span class="tn">${esc(t.name)}</span><span class="ts">свободен</span></button>`;
-    else h += `<button class="tile busy" data-a="tableTap" data-t="${t.id}" data-ot="${o.id}"><span class="tn">${esc(t.name)}</span><span class="tg">${esc(guestName(o))}</span><span class="tsum">${money(orderTotal(o))}</span><span class="ts" data-since="${o.openedAt}" data-short="1"></span><span class="tw"></span></button>`;
+    const os = ordersByTable(t.id);
+    if (!os.length) { h += `<button class="tile free" data-a="tableTap" data-t="${t.id}"><span class="tn">${esc(t.name)}</span><span class="ts">свободен</span></button>`; continue; }
+    const who = os.length > 1 ? `${os.length} ${guestsWord(os.length)}` : guestLabel(os[0]);
+    h += `<button class="tile busy" data-a="tableTap" data-t="${t.id}" data-tt="${t.id}"><span class="tn">${esc(t.name)}</span><span class="tg">${esc(who)}</span><span class="tsum">${money(os.reduce((a, o) => a + orderTotal(o), 0))}</span><span class="ts" data-since="${Math.min(...os.map(o => o.openedAt))}" data-short="1"></span><span class="tw"></span></button>`;
   }
   return h + `</div>`;
 }
@@ -301,17 +317,19 @@ function vOrder() {
   if (!o) { ui.view = 'tables'; return vTables(); }
   const g = o.guestId && guestById(o.guestId);
   const hot = S.products.filter(p => p.hot), hotCats = S.categories.filter(c => c.hot);
+  const os = ordersByTable(o.tableId), multi = os.length > 1;
   let h = `<div class="ohead"><button class="back" data-a="tab" data-v="tables" aria-label="Назад">‹</button><div class="otitle">Стол ${esc(tableName(o.tableId))}</div><button class="btn sm outline" data-a="moveAsk">Пересадить</button></div>`;
-  h += `<div class="muted small" style="margin:-4px 0 10px">Открыт в ${fmtTime(o.openedAt)} · сидят <span data-since="${o.openedAt}"></span></div>`;
-  h += `<div class="card guest" data-a="pickGuest"><span>${g ? `<b>${esc(g.name)}</b> <span class="muted small">${esc(g.phone || '')}</span>` : 'Гость без имени'}</span><span class="link">${g ? 'сменить' : 'выбрать постоянника'}</span></div>`;
+  h += `<div class="muted small" style="margin:-4px 0 10px">${multi ? 'Гость' : 'Стол'} с ${fmtTime(o.openedAt)} · <span data-since="${o.openedAt}"></span>${multi ? ` · весь стол ${money(os.reduce((a, x) => a + orderTotal(x), 0))}` : ''}</div>`;
+  h += `<div class="seats">${os.map(x => `<button class="seat ${x === o ? 'on' : ''}" data-a="seat" data-o="${x.id}"><b>${esc(guestLabel(x))}</b><small>${money(orderTotal(x))}</small></button>`).join('')}<button class="seat add" data-a="seatAdd"><b>+ Гость</b><small>отдельный чек</small></button></div>`;
+  h += `<div class="card guest" data-a="pickGuest"><span>${g ? `<b>${esc(g.name)}</b> <span class="muted small">${esc(g.phone || '')}</span>` : (multi ? `${esc(guestLabel(o))} · без имени` : 'Гость без имени')}</span><span class="link">${g ? 'сменить' : 'выбрать постоянника'}</span></div>`;
   if (hot.length || hotCats.length) h += `<div class="hot">${hot.map(p => `<button class="hb" data-a="add" data-p="${p.id}"><span>${esc(p.name)}</span><small>${money(p.price)}</small></button>`).join('')}${hotCats.map(c => `<button class="hb" data-a="cat" data-c="${c.id}" data-scroll="1"><span>${esc(c.name)}</span><small>выбрать сорт ›</small></button>`).join('')}</div>`;
   h += `<input id="q" type="search" placeholder="Поиск позиции…" value="${esc(ui.q)}" autocomplete="off">`;
   h += `<div class="chips">${S.categories.map(c => `<button class="chip ${ui.cat === c.id ? 'on' : ''}" data-a="cat" data-c="${c.id}">${esc(c.name)}</button>`).join('')}</div>`;
   h += `<div id="results">${resultsHtml()}</div>`;
-  h += `<div class="card"><div class="h3">Заказ</div>${o.items.length ? o.items.map(it => itemHtml(o, it)).join('') : '<div class="empty">Пока пусто — добавьте позиции кнопками выше</div>'}</div>`;
+  h += `<div class="card"><div class="h3">${multi ? 'Заказ · ' + esc(guestLabel(o)) : 'Заказ'}</div>${o.items.length ? o.items.map(it => itemHtml(o, it)).join('') : '<div class="empty">Пока пусто — добавьте позиции кнопками выше</div>'}</div>`;
   h += o.items.length
-    ? `<div class="footer"><div><div class="muted small">Итого</div><div class="total">${money(orderTotal(o))}</div></div><button class="btn primary big" data-a="closeAsk">Закрыть стол</button></div>`
-    : `<div class="footer"><div class="muted small">Стол открыт по ошибке?</div><button class="btn big" data-a="cancelOrder">Освободить стол</button></div>`;
+    ? `<div class="footer"><div><div class="muted small">${multi ? 'Итого · ' + esc(guestLabel(o)) : 'Итого'}</div><div class="total">${money(orderTotal(o))}</div></div><button class="btn primary big" data-a="closeAsk">${multi ? 'Закрыть чек' : 'Закрыть стол'}</button></div>`
+    : `<div class="footer"><div class="muted small">${multi ? 'Гость добавлен по ошибке?' : 'Стол открыт по ошибке?'}</div><button class="btn big" data-a="cancelOrder">${multi ? 'Убрать гостя' : 'Освободить стол'}</button></div>`;
   return h;
 }
 
@@ -492,7 +510,7 @@ function renderChanges(now) {
   const sig = rows.map(r => r.it.id + r.c.state + r.c.n).join('|');
   if (sig === panelSig) return;
   panelSig = sig;
-  box.innerHTML = rows.length ? `<div class="card"><div class="h3">Ближайшие замены</div>${rows.map(r => `<div class="chrow ${r.c.state}"><div><b>Стол ${esc(tableName(r.o.tableId))}</b> · ${esc(r.it.name)} #${r.it.no}<div class="tm" data-o="${r.o.id}" data-i="${r.it.id}"></div></div><button class="btn ${r.c.state === 'due' ? 'warn' : ''} sm" data-a="coalDone" data-o="${r.o.id}" data-i="${r.it.id}">Заменил</button></div>`).join('')}</div>` : '';
+  box.innerHTML = rows.length ? `<div class="card"><div class="h3">Ближайшие замены</div>${rows.map(r => `<div class="chrow ${r.c.state}"><div><b>Стол ${esc(tableName(r.o.tableId))}</b>${ordersByTable(r.o.tableId).length > 1 ? ' · ' + esc(guestLabel(r.o)) : ''} · ${esc(r.it.name)} #${r.it.no}<div class="tm" data-o="${r.o.id}" data-i="${r.it.id}"></div></div><button class="btn ${r.c.state === 'due' ? 'warn' : ''} sm" data-a="coalDone" data-o="${r.o.id}" data-i="${r.it.id}">Заменил</button></div>`).join('')}</div>` : '';
 }
 function tick() {
   if (!S) return;
@@ -506,9 +524,9 @@ function tick() {
     el.textContent = coalText(c); el.className = 'tm ' + c.state;
     const row = el.closest('.item'); if (row) { row.classList.toggle('due', c.state === 'due'); const b = row.querySelector('[data-a=coalDone]'); if (b) b.classList.toggle('warn', c.state === 'due'); }
   });
-  document.querySelectorAll('.tile[data-ot]').forEach(el => {
-    const o = S.orders.find(x => x.id === el.dataset.ot); if (!o) return;
-    const cs = o.items.map(i => coalInfo(i, now)).filter(Boolean);
+  document.querySelectorAll('.tile[data-tt]').forEach(el => {
+    const os = S.orders.filter(x => x.tableId === el.dataset.tt); if (!os.length) return;
+    const cs = os.flatMap(o => o.items).map(i => coalInfo(i, now)).filter(Boolean);
     const due = cs.filter(c => c.state === 'due').length, idle = cs.filter(c => c.state === 'idle').length;
     el.classList.toggle('alert', due > 0); el.classList.toggle('idle', !due && idle > 0);
     el.querySelector('.tw').textContent = due ? `замена! ×${due}` : idle ? `▶ ждёт ×${idle}` : '';
@@ -545,7 +563,7 @@ const A = {
   shiftOpen() { openShift(); commit(); },
   shiftClose() {
     const sh = curShift(); if (!sh) return;
-    if (S.orders.length) { modal(`<h2>Сначала закройте столы</h2><div class="muted">Открыты столы: <b>${S.orders.map(o => tableName(o.tableId)).join(', ')}</b>. Закройте их чеки, потом закрывайте смену.</div><button class="btn full" data-a="closeModal">Понятно</button>`); return; }
+    if (S.orders.length) { modal(`<h2>Сначала закройте столы</h2><div class="muted">Открыты столы: <b>${[...new Set(S.orders.map(o => tableName(o.tableId)))].join(', ')}</b>. Закройте их чеки, потом закрывайте смену.</div><button class="btn full" data-a="closeModal">Понятно</button>`); return; }
     const now = Date.now(), r = calc(S.checks.filter(c => c.shiftId === sh.id));
     modal(`<h2>Закрыть смену?</h2><div class="muted" style="margin-bottom:10px">${fmtDate(sh.openedAt)} ${fmtTime(sh.openedAt)} — ${fmtTime(now)} · ${fmtDur(now - sh.openedAt)}</div>${summaryHtml(r)}<button class="btn primary full big" data-a="shiftCloseOk">Закрыть смену</button><button class="btn ghost full" data-a="closeModal">Отмена</button>`);
   },
@@ -554,11 +572,10 @@ const A = {
     modal(`<h2>Смена закрыта</h2><div class="muted">${fmtTime(sh.openedAt)} — ${fmtTime(sh.closedAt)}. Не забудьте сохранить копию данных.</div><button class="btn primary full big" data-a="backup">Сохранить копию</button><button class="btn ghost full" data-a="closeModal">Позже</button>`);
   },
   tableTap(d) {
-    let o = orderByTable(d.t);
+    let o = ordersByTable(d.t)[0];
     if (!o) {
       if (!curShift()) { if (!confirm('Смена не открыта. Открыть смену сейчас?')) return; openShift(); }
-      o = { id: uid(), tableId: d.t, guestId: null, guestName: '', openedAt: Date.now(), shiftId: S.shiftId, items: [] };
-      S.orders.push(o); save();
+      o = newOrder(d.t); save();
     }
     ui.orderId = o.id; ui.q = ''; ui.cat = null; ui.view = 'order'; render(); window.scrollTo(0, 0);
   },
@@ -568,13 +585,15 @@ const A = {
   coalDone(d) { const [, it] = findItem(d); if (!it || !it.startedAt) return; it.done = (it.done || 0) + 1; toast(`Замена ${it.done} отмечена`); commit(); },
   itemDel(d) { const [o, it] = findItem(d); if (!it || !confirm(`Удалить «${it.name} #${it.no}» из заказа?`)) return; o.items = o.items.filter(x => x !== it); commit(); },
   qty(d) { const [o, it] = findItem(d); if (!it) return; it.qty += +d.d; if (it.qty <= 0) { if (!confirm(`Убрать «${it.name}» из заказа?`)) { it.qty = 1; return; } o.items = o.items.filter(x => x !== it); } commit(); },
-  cancelOrder() { const o = S.orders.find(x => x.id === ui.orderId); if (!o || o.items.length) return; S.orders = S.orders.filter(x => x !== o); ui.view = 'tables'; commit(); },
+  cancelOrder() { const o = S.orders.find(x => x.id === ui.orderId); if (!o || o.items.length) return; S.orders = S.orders.filter(x => x !== o); const rest = ordersByTable(o.tableId); if (rest.length) { ui.orderId = rest[0].id; ui.view = 'order'; } else ui.view = 'tables'; commit(); },
+  seat(d) { ui.orderId = d.o; ui.q = ''; ui.cat = null; render(); window.scrollTo(0, 0); },
+  seatAdd() { const o = S.orders.find(x => x.id === ui.orderId); if (!o) return; const n = newOrder(o.tableId); ui.orderId = n.id; ui.q = ''; ui.cat = null; commit(); window.scrollTo(0, 0); toast('Новый гость за столом ' + tableName(o.tableId)); },
   moveAsk() {
     const o = S.orders.find(x => x.id === ui.orderId); if (!o) return;
-    const free = S.tables.filter(t => !orderByTable(t.id));
-    modal(`<h2>Пересадить со стола ${esc(tableName(o.tableId))}</h2>${free.length ? `<div class="grid">${free.map(t => `<button class="tile free" data-a="moveTo" data-t="${t.id}"><span class="tn">${esc(t.name)}</span></button>`).join('')}</div>` : '<div class="muted">Свободных столов нет</div>'}<button class="btn ghost full" data-a="closeModal">Отмена</button>`);
+    const others = S.tables.filter(t => t.id !== o.tableId);
+    modal(`<h2>Пересадить «${esc(guestLabel(o))}»</h2><div class="muted small" style="margin-bottom:10px">Со стола ${esc(tableName(o.tableId))} — на свободный стол или к другой компании. Заказ и таймеры переедут вместе с гостем.</div>${others.length ? `<div class="grid" style="--cols:4">${others.map(t => { const n = ordersByTable(t.id).length; return `<button class="tile ${n ? 'busy' : 'free'}" data-a="moveTo" data-t="${t.id}"><span class="tn">${esc(t.name)}</span><span class="ts">${n ? n + ' ' + guestsWord(n) : 'свободен'}</span></button>`; }).join('')}</div>` : '<div class="muted">Других столов нет</div>'}<button class="btn ghost full" data-a="closeModal">Отмена</button>`);
   },
-  moveTo(d) { const o = S.orders.find(x => x.id === ui.orderId); if (!o || orderByTable(d.t)) return; o.tableId = d.t; closeModal(); toast('Пересадили на стол ' + tableName(d.t)); commit(); },
+  moveTo(d) { const o = S.orders.find(x => x.id === ui.orderId); if (!o || d.t === o.tableId) return; o.seat = nextSeat(d.t); o.tableId = d.t; closeModal(); toast('Пересадили за стол ' + tableName(d.t)); commit(); },
   pickGuest() {
     const o = S.orders.find(x => x.id === ui.orderId); if (!o) return;
     modal(`<h2>Кто за столом ${esc(tableName(o.tableId))}?</h2><input id="pgq" type="search" placeholder="Имя или телефон постоянника" autocomplete="off"><div id="pglist" style="margin:8px 0">${pickGuestList('')}</div>
@@ -593,7 +612,7 @@ const A = {
   closeAsk() {
     const o = S.orders.find(x => x.id === ui.orderId); if (!o) return;
     const now = Date.now();
-    modal(`<h2>Стол ${esc(tableName(o.tableId))} · ${esc(guestName(o))}</h2><div class="muted" style="margin-bottom:8px">Сидели ${fmtDur(now - o.openedAt)} (${fmtTime(o.openedAt)}–${fmtTime(now)})</div>
+    modal(`<h2>Стол ${esc(tableName(o.tableId))} · ${esc(guestLabel(o))}</h2><div class="muted" style="margin-bottom:8px">Сидели ${fmtDur(now - o.openedAt)} (${fmtTime(o.openedAt)}–${fmtTime(now)})</div>
       ${o.items.map(i => `<div class="ln"><span>${esc(i.name)}${i.coal ? ' #' + i.no : ''}${i.qty > 1 ? ' × ' + i.qty : ''}</span><span>${money(i.price * i.qty)}</span></div>`).join('')}
       <div class="ln total"><span>К оплате</span><span>${money(orderTotal(o))}</span></div>
       <div class="row2"><button class="btn primary big" data-a="pay" data-m="card">Карта</button><button class="btn primary big" data-a="pay" data-m="cash">Наличные</button></div>
@@ -601,11 +620,11 @@ const A = {
   },
   pay(d) {
     const o = S.orders.find(x => x.id === ui.orderId); if (!o) return;
-    const total = orderTotal(o);
-    S.checks.push({ id: uid(), shiftId: o.shiftId || S.shiftId, tableId: o.tableId, tableName: tableName(o.tableId), guestId: o.guestId, guestName: o.guestId ? guestName(o) : '', openedAt: o.openedAt, closedAt: Date.now(), pay: d.m, total, items: o.items.map(i => ({ pid: i.pid, name: i.name, price: i.price, cat: i.cat, qty: i.qty })) });
+    const total = orderTotal(o), label = guestLabel(o);
+    S.checks.push({ id: uid(), shiftId: o.shiftId || S.shiftId, tableId: o.tableId, tableName: tableName(o.tableId), guestId: o.guestId, guestName: o.guestId || label !== 'Без имени' ? label : '', openedAt: o.openedAt, closedAt: Date.now(), pay: d.m, total, items: o.items.map(i => ({ pid: i.pid, name: i.name, price: i.price, cat: i.cat, qty: i.qty })) });
     S.orders = S.orders.filter(x => x !== o);
-    closeModal(); ui.view = 'tables'; commit(); window.scrollTo(0, 0);
-    toast(`Стол ${tableName(o.tableId)} закрыт · ${money(total)} · ${d.m === 'card' ? 'карта' : 'наличные'}`);
+    closeModal(); const rest = ordersByTable(o.tableId); if (rest.length) { ui.orderId = rest[0].id; ui.view = 'order'; } else ui.view = 'tables'; commit(); window.scrollTo(0, 0);
+    toast(`${ui.view === 'order' ? 'Чек «' + label + '» закрыт' : 'Стол ' + tableName(o.tableId) + ' закрыт'} · ${money(total)} · ${d.m === 'card' ? 'карта' : 'наличные'}`);
   },
   statsP(d) { ui.statsP = d.p; ui.statsShift = null; render(); },
   statsShift(d) { ui.statsP = 'shift'; ui.statsShift = d.s; render(); window.scrollTo(0, 0); },
