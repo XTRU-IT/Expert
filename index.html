@@ -165,6 +165,7 @@ td.r,th.r{text-align:right;white-space:nowrap}
 details summary{cursor:pointer;color:var(--mu);padding:4px 0}
 #toast{position:fixed;left:50%;bottom:calc(var(--tabh) + 92px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(20,22,34,.96);border:1px solid var(--goldline);color:var(--tx);padding:10px 18px;border-radius:999px;z-index:20;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;text-align:center;font-weight:600}
 #toast.on{opacity:1}
+#modal.on~#toast{bottom:auto;top:calc(16px + env(safe-area-inset-top))}
 .empty{color:var(--mu);text-align:center;padding:18px}
 .mcat{min-width:0;overflow-wrap:anywhere;font:700 17px/1.2 var(--serif);text-transform:uppercase;letter-spacing:.04em;color:var(--tx)}
 </style>
@@ -261,6 +262,26 @@ async function save() {
   } catch (e) { checksDirty = true; toast('Ошибка сохранения: ' + e.message); }
 }
 const fmtBytes = b => b >= 1e9 ? Math.round(b / 1e9) + ' ГБ' : Math.max(1, Math.round(b / 1e6)) + ' МБ';
+// после отправки посреди смены — напомнить, что дальше работает получатель
+function handedOver() {
+  if (!curShift() && !S.orders.length) { toast('База отправлена'); return; }
+  modal(`<h2>База отправлена</h2><div class="muted">Когда получатель примет файл, продолжайте работу только на его телефоне. Заказы и чеки, внесённые здесь после отправки, к нему не попадут.</div><button class="btn full" data-a="closeModal">Понятно</button>`);
+}
+let pendingRestore = null;
+function restoreAsk(data) {
+  const st = migrate(JSON.parse(JSON.stringify(data.state))), sh = st.shifts.find(s => s.id === st.shiftId);
+  const tables = new Set(st.orders.map(o => o.tableId)).size, age = Date.now() - data.at;
+  const here = S.checks.length || S.orders.length ? `<div class="small" style="color:var(--warn);margin-top:10px">На этом телефоне сейчас ${S.checks.length} ${plural(S.checks.length, 'чек', 'чека', 'чеков')} и ${new Set(S.orders.map(o => o.tableId)).size} ${plural(new Set(S.orders.map(o => o.tableId)).size, 'открытый стол', 'открытых стола', 'открытых столов')} — они заменятся базой из файла. Если они нужны, сначала отправьте свою базу.</div>` : '';
+  pendingRestore = data;
+  modal(`<h2>Принять базу?</h2>
+    <div class="ln"><span>Сохранена</span><span>${fmtDate(data.at)} ${fmtTime(data.at)} · ${fmtDur(age)} назад</span></div>
+    <div class="ln"><span>Смена</span><span>${sh ? 'открыта с ' + fmtTime(sh.openedAt) + ' — продолжится' : 'закрыта'}</span></div>
+    <div class="ln"><span>Открыто столов</span><span>${tables}${st.orders.length > tables ? ' (гостей ' + st.orders.length + ')' : ''}</span></div>
+    <div class="ln"><span>Чеков в базе</span><span>${st.checks.length}</span></div>
+    <div class="ln"><span>Постоянников</span><span>${st.guests.length}</span></div>
+    ${age > 3 * 3600000 ? '<div class="small" style="color:var(--warn);margin-top:10px">Файлу больше 3 часов — проверьте, что это последняя версия.</div>' : ''}${here}
+    <button class="btn primary full big" data-a="restoreOk">Принять базу</button><button class="btn ghost full" data-a="closeModal">Отмена</button>`);
+}
 async function storeInfo() {
   const el = $('#storeInfo'); if (!el) return;
   const kb = Math.round(new Blob([JSON.stringify(S)]).size / 1024);
@@ -269,7 +290,7 @@ async function storeInfo() {
   try { persisted = await navigator.storage.persisted(); } catch (e) { }
   el.innerHTML = `База в памяти телефона (IndexedDB, не localStorage): сейчас <b>${kb < 1024 ? kb + ' КБ' : (kb / 1024).toFixed(1) + ' МБ'}</b>${quota}. Год работы — примерно 5–10 МБ.<br>
     Защита от автоочистки: <b>${persisted ? 'включена' : 'не подтверждена'}</b>${persisted ? '' : ' — установите программу на главный экран, тогда Chrome её включает'}.<br>
-    Данные пропадут, только если удалить программу или очистить данные сайта в Chrome — на этот случай есть «Сохранить копию».`;
+    Данные пропадут, только если удалить программу или очистить данные сайта в Chrome — на этот случай отправляйте базу себе в Telegram.`;
 }
 function commit() { save(); render(); }
 
@@ -286,6 +307,7 @@ const ordersByTable = id => S.orders.filter(o => o.tableId === id).sort((a, b) =
 function guestLabel(o) { if (o.guestId) return guestName(o); return ordersByTable(o.tableId).length > 1 ? 'Гость ' + (o.seat || 1) : 'Без имени'; }
 const nextSeat = tableId => S.orders.filter(o => o.tableId === tableId).reduce((m, o) => Math.max(m, o.seat || 1), 0) + 1;
 function newOrder(tableId) { const o = { id: uid(), tableId, seat: nextSeat(tableId), guestId: null, guestName: '', openedAt: Date.now(), shiftId: S.shiftId, items: [] }; S.orders.push(o); return o; }
+const plural = (n, one, few, many) => n % 10 === 1 && n % 100 !== 11 ? one : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? few : many;
 const guestsWord = n => n % 10 === 1 && n % 100 !== 11 ? 'гость' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'гостя' : 'гостей';
 
 function coalInfo(it, now) {
@@ -325,7 +347,7 @@ function vTables() {
   const sh = curShift();
   let h = `<div class="brand"><h1>${TITLE}</h1><span class="sub">${todayLabel()}</span></div>`;
   if (!sh) {
-    h += `<div class="card shiftbar off"><div><b>Смена закрыта</b><div class="muted small">Откройте смену, чтобы сажать гостей</div></div><button class="btn primary" data-a="shiftOpen">Открыть смену</button></div>`;
+    h += `<div class="card shiftbar off"><div><b>Смена закрыта</b><div class="muted small">Откройте смену, чтобы сажать гостей</div></div><button class="btn primary" data-a="shiftOpen">Открыть смену</button></div><div style="text-align:center;margin:-2px 0 12px"><button class="btn ghost sm" data-a="restore">Принять базу от коллеги</button></div>`;
   } else {
     const cs = S.checks.filter(c => c.shiftId === sh.id);
     h += `<div class="card shiftbar"><div><b>Смена с ${fmtTime(sh.openedAt)}</b> <span class="muted small" style="white-space:nowrap">· <span data-since="${sh.openedAt}"></span></span><div class="muted small">${money(cs.reduce((a, c) => a + c.total, 0))} · чеков ${cs.length} · открыто столов ${new Set(S.orders.map(o => o.tableId)).size}</div>${Date.now() - sh.openedAt > 14 * 3600000 ? `<div class="small" style="color:var(--warn);margin-top:4px">Смена открыта ${fmtDate(sh.openedAt)} и идёт больше 14 часов — не забыли закрыть?</div>` : ''}</div><button class="btn sm" data-a="shiftClose">Закрыть смену</button></div>`;
@@ -506,10 +528,10 @@ function prodForm(p) {
 let installEvt = null, wakeLock = null;
 function vMore() {
   const st = S.settings;
-  return `<div class="card"><div class="h3">Резервная копия</div>
-      <div class="muted small" style="margin-bottom:8px">Все данные хранятся только в этом телефоне. Сохраняйте копию в конце смены — например, отправьте файл себе в Telegram.<br>Последняя копия: <b>${S.lastBackup ? fmtDate(S.lastBackup) + ' ' + fmtTime(S.lastBackup) : 'ещё не делали'}</b></div>
-      <button class="btn primary full big" data-a="backup">Сохранить копию</button>
-      <button class="btn full" data-a="restore">Восстановить из копии…</button></div>
+  return `<div class="card"><div class="h3">База: передать и принять</div>
+      <div class="muted small" style="margin-bottom:8px">В одном файле всё: открытая смена, столы, заказы, таймеры углей, чеки, постоянники, меню. «Отправить» → выберите Telegram и человека. Получатель скачивает файл и нажимает у себя «Принять базу» — та же смена продолжится с того же места. Ещё это резервная копия: отправляйте себе в конце смены.<br>Последняя отправка: <b>${S.lastBackup ? fmtDate(S.lastBackup) + ' ' + fmtTime(S.lastBackup) : 'ещё не было'}</b></div>
+      <button class="btn primary full big" data-a="backup">Отправить базу в Telegram</button>
+      <button class="btn full" data-a="restore">Принять базу из файла…</button></div>
     <div class="card"><div class="h3">Где хранятся данные</div><div class="muted small" id="storeInfo">Проверяю…</div></div>
     <div class="card"><div class="h3">Столы (${S.tables.length})</div>${S.tables.map(t => `<div class="row" style="padding:4px 0"><span>Стол <b>${esc(t.name)}</b></span><span><button class="btn sm" data-a="tRen" data-t="${t.id}">✎</button> <button class="btn sm" data-a="tDel" data-t="${t.id}">✕</button></span></div>`).join('')}
       <button class="btn full" data-a="tAdd">+ Добавить стол</button></div>
@@ -621,7 +643,7 @@ const A = {
   },
   shiftCloseOk() {
     const sh = curShift(); sh.closedAt = Date.now(); S.shiftId = null; save(); render();
-    modal(`<h2>Смена закрыта</h2><div class="muted">${fmtTime(sh.openedAt)} — ${fmtTime(sh.closedAt)}. Не забудьте сохранить копию данных.</div><button class="btn primary full big" data-a="backup">Сохранить копию</button><button class="btn ghost full" data-a="closeModal">Позже</button>`);
+    modal(`<h2>Смена закрыта</h2><div class="muted">${fmtTime(sh.openedAt)} — ${fmtTime(sh.closedAt)}. Отправьте базу себе в Telegram — это резервная копия.</div><button class="btn primary full big" data-a="backup">Отправить базу в Telegram</button><button class="btn ghost full" data-a="closeModal">Позже</button>`);
   },
   tableTap(d) {
     let o = ordersByTable(d.t)[0];
@@ -723,18 +745,24 @@ const A = {
   tDel(d) { const t = S.tables.find(x => x.id === d.t); if (orderByTable(t.id)) { alert('За этим столом сейчас сидят — сначала закройте его.'); return; } if (!confirm(`Удалить стол ${t.name}?`)) return; S.tables = S.tables.filter(x => x !== t); commit(); },
   testBeep() { unlockAudio(); const s = S.settings.sound; S.settings.sound = true; beep(); S.settings.sound = s; },
   async backup() {
-    const name = `kalyan-kopiya-${ymd(new Date())}.txt`;
+    const n = new Date(), name = `expert-lounge-baza-${ymd(n)}_${pad(n.getHours())}-${pad(n.getMinutes())}.txt`;
     const file = new File([JSON.stringify({ app: APP, v: 1, at: Date.now(), state: S })], name, { type: 'text/plain' });
     const done = () => { S.lastBackup = Date.now(); save(); if (ui.view === 'more') render(); };
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      try { await navigator.share({ files: [file], title: name }); done(); toast('Копия отправлена'); return; }
+      try { await navigator.share({ files: [file], title: 'База Expert Lounge' }); done(); handedOver(); return; }
       catch (e) { if (e.name === 'AbortError') return; }
     }
     const a = document.createElement('a'); a.href = URL.createObjectURL(file); a.download = name; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 10000);
-    done(); toast('Копия сохранена в «Загрузки»');
+    done(); toast('Файл сохранён в «Загрузки» — отправьте его в Telegram вручную');
   },
-  restore() { $('#restoreFile').value = ''; $('#restoreFile').click(); },
+  restoreOk() {
+    if (!pendingRestore) return;
+    S = migrate(pendingRestore.state); pendingRestore = null; checksDirty = true; save();
+    closeModal(); ui.view = 'tables'; ui.orderId = null; render(); window.scrollTo(0, 0);
+    toast(curShift() ? 'База принята — смена продолжается' : 'База принята');
+  },
+  restore() { closeModal(); $('#restoreFile').value = ''; $('#restoreFile').click(); },
   async install() { if (!installEvt) return; installEvt.prompt(); await installEvt.userChoice; installEvt = null; render(); }
 };
 
@@ -768,8 +796,7 @@ document.addEventListener('change', async e => {
     try {
       const data = JSON.parse(await f.text());
       if (data.app !== APP || !data.state || !Array.isArray(data.state.products)) throw new Error('это не копия Expert Lounge');
-      if (!confirm(`Восстановить копию от ${fmtDate(data.at)} ${fmtTime(data.at)}? Текущие данные в телефоне будут заменены.`)) return;
-      S = migrate(data.state); checksDirty = true; await save(); ui.view = 'tables'; render(); toast('Данные восстановлены');
+      restoreAsk(data);
     } catch (err) { alert('Не удалось прочитать файл: ' + err.message); }
   }
 });
