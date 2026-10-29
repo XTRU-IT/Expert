@@ -261,7 +261,6 @@ async function save() {
     if (checksDirty) { checksDirty = false; await DB.set('checks', checks); }
   } catch (e) { checksDirty = true; toast('Ошибка сохранения: ' + e.message); }
 }
-const fmtBytes = b => b >= 1e9 ? Math.round(b / 1e9) + ' ГБ' : Math.max(1, Math.round(b / 1e6)) + ' МБ';
 // после отправки посреди смены — напомнить, что дальше работает получатель
 function handedOver() {
   if (!curShift() && !S.orders.length) { toast('База отправлена'); return; }
@@ -281,16 +280,6 @@ function restoreAsk(data) {
     <div class="ln"><span>Постоянников</span><span>${st.guests.length}</span></div>
     ${age > 3 * 3600000 ? '<div class="small" style="color:var(--warn);margin-top:10px">Файлу больше 3 часов — проверьте, что это последняя версия.</div>' : ''}${here}
     <button class="btn primary full big" data-a="restoreOk">Принять базу</button><button class="btn ghost full" data-a="closeModal">Отмена</button>`);
-}
-async function storeInfo() {
-  const el = $('#storeInfo'); if (!el) return;
-  const kb = Math.round(new Blob([JSON.stringify(S)]).size / 1024);
-  let quota = '', persisted = false;
-  try { const e = await navigator.storage.estimate(); if (e.quota) quota = `, доступно до ${fmtBytes(e.quota)}`; } catch (e) { }
-  try { persisted = await navigator.storage.persisted(); } catch (e) { }
-  el.innerHTML = `База в памяти телефона (IndexedDB, не localStorage): сейчас <b>${kb < 1024 ? kb + ' КБ' : (kb / 1024).toFixed(1) + ' МБ'}</b>${quota}. Год работы — примерно 5–10 МБ.<br>
-    Защита от автоочистки: <b>${persisted ? 'включена' : 'не подтверждена'}</b>${persisted ? '' : ' — установите программу на главный экран, тогда Chrome её включает'}.<br>
-    Данные пропадут, только если удалить программу или очистить данные сайта в Chrome — на этот случай отправляйте базу себе в Telegram.`;
 }
 function commit() { save(); render(); }
 
@@ -333,7 +322,6 @@ function render() {
   const main = $('#view');
   main.innerHTML = (views[v] || vTables)();
   main.classList.toggle('withfoot', ui.view === 'order');
-  if (ui.view === 'more') storeInfo();
   fitFooter();
   panelSig = null;
   tick();
@@ -528,16 +516,13 @@ function prodForm(p) {
 let installEvt = null, wakeLock = null;
 function vMore() {
   const st = S.settings;
-  return `<div class="card"><div class="h3">База: передать и принять</div>
-      <div class="muted small" style="margin-bottom:8px">В одном файле всё: открытая смена, столы, заказы, таймеры углей, чеки, постоянники, меню. «Отправить» → выберите Telegram и человека. Получатель скачивает файл и нажимает у себя «Принять базу» — та же смена продолжится с того же места. Ещё это резервная копия: отправляйте себе в конце смены.<br>Последняя отправка: <b>${S.lastBackup ? fmtDate(S.lastBackup) + ' ' + fmtTime(S.lastBackup) : 'ещё не было'}</b></div>
+  return `<div class="card"><div class="h3">База</div>
       <button class="btn primary full big" data-a="backup">Отправить базу в Telegram</button>
       <button class="btn full" data-a="restore">Принять базу из файла…</button></div>
-    <div class="card"><div class="h3">Где хранятся данные</div><div class="muted small" id="storeInfo">Проверяю…</div></div>
     <div class="card"><div class="h3">Столы (${S.tables.length})</div>${S.tables.map(t => `<div class="row" style="padding:4px 0"><span>Стол <b>${esc(t.name)}</b></span><span><button class="btn sm" data-a="tRen" data-t="${t.id}">✎</button> <button class="btn sm" data-a="tDel" data-t="${t.id}">✕</button></span></div>`).join('')}
       <button class="btn full" data-a="tAdd">+ Добавить стол</button></div>
     <div class="card"><div class="h3">Замены углей</div>
-      <div class="muted small">Минуты считаются с момента, когда кальян вынесли (кнопка ▶).</div>
-      <div class="row2" style="margin-top:4px"><label>Замена 1, мин<input id="ch1" type="number" inputmode="numeric" min="1" value="${st.changes[0] || ''}"></label><label>Замена 2, мин<input id="ch2" type="number" inputmode="numeric" min="1" value="${st.changes[1] || ''}" placeholder="нет"></label></div>
+      <div class="row2" style="margin-top:0"><label>Замена 1, мин<input id="ch1" type="number" inputmode="numeric" min="1" value="${st.changes[0] || ''}"></label><label>Замена 2, мин<input id="ch2" type="number" inputmode="numeric" min="1" value="${st.changes[1] || ''}" placeholder="нет"></label></div>
       <label class="chk"><input type="checkbox" id="s_sound" ${st.sound ? 'checked' : ''}> Звук и вибрация при замене</label>
       <label class="chk"><input type="checkbox" id="s_wake" ${st.wake ? 'checked' : ''}> Не гасить экран, пока программа открыта</label>
       <button class="btn full" data-a="testBeep">Проверить звук</button></div>
