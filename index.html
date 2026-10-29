@@ -44,7 +44,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .btn.outline{background:transparent;border-color:var(--goldline);color:var(--gold)}
 .btn.big{min-height:56px;font-size:17px}
 .btn.sm{min-height:38px;padding:6px 14px;font-size:14px}
-.btn.full{width:100%}
+.btn.full{display:block;width:100%;white-space:normal}
+.btn.full+.btn.full{margin-top:10px}
 .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0 4px}
 .row2 input{min-width:0}
@@ -67,7 +68,7 @@ label.chk input{width:22px;height:22px;min-height:0;margin:0;accent-color:var(--
 .tile:active{transform:scale(.97)}
 .tile{container-type:inline-size}
 .tile .tn{font:800 min(26px,34cqw)/1.05 var(--serif)}
-.tile .ts{font-size:min(11px,15cqw);color:var(--mu);white-space:nowrap}
+.tile .ts{font-size:min(11px,15cqw);color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .tile .tg{font-size:min(12px,16cqw);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .tile .tsum{font-weight:800;font-size:min(13px,16cqw);color:var(--gold);white-space:nowrap}
 .tile .tw{font-size:min(11px,15cqw);font-weight:700;line-height:1.2}
@@ -103,7 +104,9 @@ label.chk input{width:22px;height:22px;min-height:0;margin:0;accent-color:var(--
 .guest{display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer}
 .guest>span:first-child{min-width:0;overflow-wrap:anywhere}
 .link{color:var(--gold);font-size:14px;font-weight:600;white-space:nowrap}
-.hot{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.hot{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.hb{min-width:0;overflow-wrap:anywhere}
+.acts{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px}
 .hb{background:linear-gradient(160deg,rgba(30,32,48,.9),rgba(18,20,32,.85));border:1px solid var(--goldline);border-radius:20px;min-height:66px;padding:10px 14px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;text-align:left;font-weight:700}
 .hb:active{background:var(--gold);color:var(--goldtx)}
 .hb small{color:var(--gold);font-weight:600}
@@ -117,15 +120,19 @@ label.chk input{width:22px;height:22px;min-height:0;margin:0;accent-color:var(--
 .res b{color:var(--gold)}
 .item{display:flex;align-items:center;gap:8px;padding:12px 0;border-top:1px solid var(--line)}
 .item:first-of-type{border-top:0}
-.item .in{flex:1;min-width:0}
+.item .in{flex:1;min-width:0;overflow-wrap:anywhere}
+.item>.btn{flex:0 0 auto}
 .item.due .in b{color:var(--warn)}
 .qty{display:flex;align-items:center;gap:6px}
 .qty .btn{width:38px;padding:0}
 .qty b{min-width:22px;text-align:center}
 .x{background:none;border:0;color:var(--dim);font-size:18px;padding:8px;min-width:36px}
 .footer{position:fixed;left:0;right:0;bottom:calc(var(--tabh) + env(safe-area-inset-bottom));background:rgba(7,9,15,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:4}
-.footer .total{font-size:26px;font-weight:800}
-.footer .btn{flex:0 0 auto}
+.footer{flex-wrap:wrap}
+.footer>div:first-child{min-width:0;flex:1 1 auto}
+.footer .muted{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.footer .total{font-size:26px;font-weight:800;white-space:nowrap}
+.footer .btn{flex:1 0 auto}
 #modal{position:fixed;inset:0;background:rgba(3,6,16,.7);display:none;align-items:flex-end;justify-content:center;z-index:10}
 #modal.on{display:flex}
 .sheet{background:linear-gradient(180deg,#151827,#0b0d16);border:1px solid var(--line2);border-bottom:0;border-radius:28px 28px 0 0;width:100%;max-width:760px;max-height:92vh;overflow:auto;padding:22px 18px calc(18px + env(safe-area-inset-bottom))}
@@ -134,9 +141,9 @@ label.chk input{width:22px;height:22px;min-height:0;margin:0;accent-color:var(--
 .ln.total{font-size:22px;font-weight:800;border:0;padding-top:14px}
 .ln.total span:last-child{color:var(--gold)}
 .sep{height:1px;background:var(--line);margin:16px 0}
-.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:12px 14px}
-.kpi b{display:block;font-size:22px;font-weight:800}
+.kpi b{display:block;font-size:22px;font-weight:800;overflow-wrap:anywhere}
 .kpi:first-child b{color:var(--gold)}
 .kpi span{font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.08em}
 .bar{margin:10px 0}
@@ -159,7 +166,7 @@ details summary{cursor:pointer;color:var(--mu);padding:4px 0}
 #toast{position:fixed;left:50%;bottom:calc(var(--tabh) + 92px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(20,22,34,.96);border:1px solid var(--goldline);color:var(--tx);padding:10px 18px;border-radius:999px;z-index:20;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;text-align:center;font-weight:600}
 #toast.on{opacity:1}
 .empty{color:var(--mu);text-align:center;padding:18px}
-.mcat{font:700 17px/1.2 var(--serif);text-transform:uppercase;letter-spacing:.04em;color:var(--tx)}
+.mcat{min-width:0;overflow-wrap:anywhere;font:700 17px/1.2 var(--serif);text-transform:uppercase;letter-spacing:.04em;color:var(--tx)}
 </style>
 </head>
 <body>
@@ -188,6 +195,7 @@ const pad = n => String(n).padStart(2, '0');
 const fmtTime = ts => { const d = new Date(ts); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
 const fmtDate = ts => { const d = new Date(ts); return pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + '.' + d.getFullYear(); };
 const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const todayLabel = () => new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' });
 function fmtDur(ms) { const m = Math.max(0, Math.floor(ms / 60000)), h = Math.floor(m / 60); return h ? `${h} ч ${m % 60} мин` : `${m} мин`; }
 function fmtShort(ms) { const m = Math.max(0, Math.floor(ms / 60000)), h = Math.floor(m / 60); return h ? `${h}ч ${m % 60}м` : `${m} мин`; }
 function fmtClock(ms) { const s = Math.floor(Math.abs(ms) / 1000), h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60; return (h ? h + ':' + pad(m) : m) + ':' + pad(s % 60); }
@@ -243,9 +251,26 @@ function migrate(s) {
   return s;
 }
 
-let S;
+let S, checksDirty = true;
 const ui = { view: 'tables', orderId: null, q: '', cat: null, statsP: 'shift', statsShift: null, statsFrom: '', statsTo: '', gq: '', mq: '' };
-async function save() { try { await DB.set('state', S); } catch (e) { toast('Ошибка сохранения: ' + e.message); } }
+async function save() {
+  try {
+    const { checks, ...rest } = S;
+    await DB.set('state', rest);
+    if (checksDirty) { checksDirty = false; await DB.set('checks', checks); }
+  } catch (e) { checksDirty = true; toast('Ошибка сохранения: ' + e.message); }
+}
+const fmtBytes = b => b >= 1e9 ? Math.round(b / 1e9) + ' ГБ' : Math.max(1, Math.round(b / 1e6)) + ' МБ';
+async function storeInfo() {
+  const el = $('#storeInfo'); if (!el) return;
+  const kb = Math.round(new Blob([JSON.stringify(S)]).size / 1024);
+  let quota = '', persisted = false;
+  try { const e = await navigator.storage.estimate(); if (e.quota) quota = `, доступно до ${fmtBytes(e.quota)}`; } catch (e) { }
+  try { persisted = await navigator.storage.persisted(); } catch (e) { }
+  el.innerHTML = `База в памяти телефона (IndexedDB, не localStorage): сейчас <b>${kb < 1024 ? kb + ' КБ' : (kb / 1024).toFixed(1) + ' МБ'}</b>${quota}. Год работы — примерно 5–10 МБ.<br>
+    Защита от автоочистки: <b>${persisted ? 'включена' : 'не подтверждена'}</b>${persisted ? '' : ' — установите программу на главный экран, тогда Chrome её включает'}.<br>
+    Данные пропадут, только если удалить программу или очистить данные сайта в Chrome — на этот случай есть «Сохранить копию».`;
+}
 function commit() { save(); render(); }
 
 // ---------- выборки ----------
@@ -286,18 +311,24 @@ function render() {
   const main = $('#view');
   main.innerHTML = (views[v] || vTables)();
   main.classList.toggle('withfoot', ui.view === 'order');
+  if (ui.view === 'more') storeInfo();
+  fitFooter();
   panelSig = null;
   tick();
 }
 
+// нижняя панель может стать выше (крупный шрифт в Android) — отступ снизу под её реальную высоту
+function fitFooter() { const f = document.querySelector('.footer'), main = $('#view'); main.style.paddingBottom = f ? f.offsetHeight + 24 + 'px' : ''; }
+window.addEventListener('resize', fitFooter);
+
 function vTables() {
   const sh = curShift();
-  let h = `<div class="brand"><h1>${TITLE}</h1><span class="sub">${new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })}</span></div>`;
+  let h = `<div class="brand"><h1>${TITLE}</h1><span class="sub">${todayLabel()}</span></div>`;
   if (!sh) {
     h += `<div class="card shiftbar off"><div><b>Смена закрыта</b><div class="muted small">Откройте смену, чтобы сажать гостей</div></div><button class="btn primary" data-a="shiftOpen">Открыть смену</button></div>`;
   } else {
     const cs = S.checks.filter(c => c.shiftId === sh.id);
-    h += `<div class="card shiftbar"><div><b>Смена с ${fmtTime(sh.openedAt)}</b> <span class="muted small" style="white-space:nowrap">· <span data-since="${sh.openedAt}"></span></span><div class="muted small">${money(cs.reduce((a, c) => a + c.total, 0))} · чеков ${cs.length} · открыто столов ${new Set(S.orders.map(o => o.tableId)).size}</div></div><button class="btn sm" data-a="shiftClose">Закрыть смену</button></div>`;
+    h += `<div class="card shiftbar"><div><b>Смена с ${fmtTime(sh.openedAt)}</b> <span class="muted small" style="white-space:nowrap">· <span data-since="${sh.openedAt}"></span></span><div class="muted small">${money(cs.reduce((a, c) => a + c.total, 0))} · чеков ${cs.length} · открыто столов ${new Set(S.orders.map(o => o.tableId)).size}</div>${Date.now() - sh.openedAt > 14 * 3600000 ? `<div class="small" style="color:var(--warn);margin-top:4px">Смена открыта ${fmtDate(sh.openedAt)} и идёт больше 14 часов — не забыли закрыть?</div>` : ''}</div><button class="btn sm" data-a="shiftClose">Закрыть смену</button></div>`;
   }
   h += `<div id="changes"></div><div class="grid" style="--cols:${Math.max(1, Math.ceil(S.tables.length / 2))}">`;
   for (const t of S.tables) {
@@ -370,7 +401,9 @@ function periodChecks() {
       break;
   }
   const label = to === Infinity ? (from ? `с ${fmtDate(from)}` : 'Всё время') : `${fmtDate(from)} — ${fmtDate(to - 1)}`;
-  return { checks: S.checks.filter(c => c.closedAt >= from && c.closedAt < to), label, from, to };
+  // ночной чек (после полуночи) относится к дню, когда открыли смену
+  const opened = new Map(S.shifts.map(s => [s.id, s.openedAt])), day = c => opened.get(c.shiftId) ?? c.closedAt;
+  return { checks: S.checks.filter(c => day(c) >= from && day(c) < to), label, from, to };
 }
 function calc(checks) {
   const r = { rev: 0, n: checks.length, card: 0, cash: 0, cats: {}, prods: {} };
@@ -398,7 +431,7 @@ function vStats() {
   const P = periodChecks(), r = calc(P.checks);
   let h = `<div class="chips">${PERIODS.map(([k, t]) => `<button class="chip ${ui.statsP === k ? 'on' : ''}" data-a="statsP" data-p="${k}">${t}</button>`).join('')}</div>`;
   if (ui.statsP === 'custom') h += `<div class="row2" style="margin-top:0"><label>С<input type="date" id="sf" value="${ui.statsFrom}"></label><label>По<input type="date" id="st" value="${ui.statsTo}"></label></div>`;
-  h += `<div class="muted" style="margin-bottom:10px">${esc(P.label)}</div>`;
+  h += `<div class="muted" style="margin-bottom:10px">${esc(P.label)}${ui.statsP !== 'shift' ? '<div class="small">Чеки после полуночи считаются в день, когда открыли смену.</div>' : ''}</div>`;
   h += summaryHtml(r);
   const prods = Object.entries(r.prods).sort((a, b) => b[1].sum - a[1].sum);
   if (prods.length) h += `<div class="card"><div class="h3">Позиции</div><table><tr><th>Позиция</th><th class="r">Шт</th><th class="r">Сумма</th></tr>${prods.map(([, p]) => `<tr><td>${esc(p.name)}</td><td class="r">${p.qty}</td><td class="r">${money(p.sum)}</td></tr>`).join('')}</table></div>`;
@@ -452,7 +485,7 @@ function menuListHtml() {
   return h || '<div class="empty">Ничего не найдено</div>';
 }
 function vMenu() {
-  return `<div class="row" style="margin-bottom:10px"><h2 style="margin:0">Позиции</h2><span><button class="btn sm" data-a="catNew">+ Категория</button> <button class="btn primary sm" data-a="prodNew">+ Позиция</button></span></div>
+  return `<div class="row" style="margin-bottom:10px"><h2 style="margin:0">Позиции</h2><span class="acts"><button class="btn sm" data-a="catNew">+ Категория</button><button class="btn primary sm" data-a="prodNew">+ Позиция</button></span></div>
     <input id="mq" type="search" placeholder="Поиск" value="${esc(ui.mq)}" autocomplete="off"><div id="mlist" style="margin-top:10px">${menuListHtml()}</div>
     <div class="muted small">«быстрая» — кнопка на экране стола. «угли» — включает таймер замен.</div>`;
 }
@@ -477,6 +510,7 @@ function vMore() {
       <div class="muted small" style="margin-bottom:8px">Все данные хранятся только в этом телефоне. Сохраняйте копию в конце смены — например, отправьте файл себе в Telegram.<br>Последняя копия: <b>${S.lastBackup ? fmtDate(S.lastBackup) + ' ' + fmtTime(S.lastBackup) : 'ещё не делали'}</b></div>
       <button class="btn primary full big" data-a="backup">Сохранить копию</button>
       <button class="btn full" data-a="restore">Восстановить из копии…</button></div>
+    <div class="card"><div class="h3">Где хранятся данные</div><div class="muted small" id="storeInfo">Проверяю…</div></div>
     <div class="card"><div class="h3">Столы (${S.tables.length})</div>${S.tables.map(t => `<div class="row" style="padding:4px 0"><span>Стол <b>${esc(t.name)}</b></span><span><button class="btn sm" data-a="tRen" data-t="${t.id}">✎</button> <button class="btn sm" data-a="tDel" data-t="${t.id}">✕</button></span></div>`).join('')}
       <button class="btn full" data-a="tAdd">+ Добавить стол</button></div>
     <div class="card"><div class="h3">Замены углей</div>
@@ -523,6 +557,7 @@ function renderChanges(now) {
 function tick() {
   if (!S) return;
   const now = Date.now();
+  const bd = document.querySelector('.brand .sub'); if (bd && bd.textContent !== todayLabel()) bd.textContent = todayLabel();
   document.querySelectorAll('[data-since]').forEach(el => { const ms = now - +el.dataset.since; el.textContent = el.dataset.short ? fmtShort(ms) : fmtDur(ms); });
   renderChanges(now);
   document.querySelectorAll('.tm').forEach(el => {
@@ -573,8 +608,16 @@ const A = {
   shiftClose() {
     const sh = curShift(); if (!sh) return;
     if (S.orders.length) { modal(`<h2>Сначала закройте столы</h2><div class="muted">Открыты столы: <b>${[...new Set(S.orders.map(o => tableName(o.tableId)))].join(', ')}</b>. Закройте их чеки, потом закрывайте смену.</div><button class="btn full" data-a="closeModal">Понятно</button>`); return; }
+    if (!S.checks.some(c => c.shiftId === sh.id)) {
+      modal(`<h2>В смене нет ни одного чека</h2><div class="muted">Смену открыли в ${fmtTime(sh.openedAt)}, но ни одного чека не закрыли. Пустой смене нечего делать в отчётах — её можно просто отменить.</div><button class="btn primary full big" data-a="shiftCancel">Отменить пустую смену</button><button class="btn ghost full" data-a="closeModal">Оставить открытой</button>`);
+      return;
+    }
     const now = Date.now(), r = calc(S.checks.filter(c => c.shiftId === sh.id));
     modal(`<h2>Закрыть смену?</h2><div class="muted" style="margin-bottom:10px">${fmtDate(sh.openedAt)} ${fmtTime(sh.openedAt)} — ${fmtTime(now)} · ${fmtDur(now - sh.openedAt)}</div>${summaryHtml(r)}<button class="btn primary full big" data-a="shiftCloseOk">Закрыть смену</button><button class="btn ghost full" data-a="closeModal">Отмена</button>`);
+  },
+  shiftCancel() {
+    const sh = curShift(); if (!sh || S.orders.length || S.checks.some(c => c.shiftId === sh.id)) return;
+    S.shifts = S.shifts.filter(x => x !== sh); S.shiftId = null; closeModal(); commit(); toast('Пустая смена отменена');
   },
   shiftCloseOk() {
     const sh = curShift(); sh.closedAt = Date.now(); S.shiftId = null; save(); render();
@@ -631,6 +674,7 @@ const A = {
     const o = S.orders.find(x => x.id === ui.orderId); if (!o) return;
     const total = orderTotal(o), label = guestLabel(o);
     S.checks.push({ id: uid(), shiftId: o.shiftId || S.shiftId, tableId: o.tableId, tableName: tableName(o.tableId), guestId: o.guestId, guestName: o.guestId || label !== 'Без имени' ? label : '', openedAt: o.openedAt, closedAt: Date.now(), pay: d.m, total, items: o.items.map(i => ({ pid: i.pid, name: i.name, price: i.price, cat: i.cat, qty: i.qty })) });
+    checksDirty = true;
     S.orders = S.orders.filter(x => x !== o);
     closeModal(); const rest = ordersByTable(o.tableId); if (rest.length) { ui.orderId = rest[0].id; ui.view = 'order'; } else ui.view = 'tables'; commit(); window.scrollTo(0, 0);
     toast(`${ui.view === 'order' ? 'Чек «' + label + '» закрыт' : 'Стол ' + tableName(o.tableId) + ' закрыт'} · ${money(total)} · ${d.m === 'card' ? 'карта' : 'наличные'}`);
@@ -645,8 +689,8 @@ const A = {
       <div class="row2"><button class="btn ${c.pay === 'card' ? 'primary' : ''}" data-a="checkPay" data-c="${c.id}" data-m="card">Карта</button><button class="btn ${c.pay === 'cash' ? 'primary' : ''}" data-a="checkPay" data-c="${c.id}" data-m="cash">Наличные</button></div>
       <button class="btn full" data-a="checkDel" data-c="${c.id}">Удалить чек</button><button class="btn ghost full" data-a="closeModal">Закрыть</button>`);
   },
-  checkPay(d) { const c = S.checks.find(x => x.id === d.c); if (!c) return; c.pay = d.m; save(); render(); A.checkOpen(d); },
-  checkDel(d) { if (!confirm('Удалить этот чек? Он пропадёт из статистики.')) return; S.checks = S.checks.filter(x => x.id !== d.c); closeModal(); commit(); },
+  checkPay(d) { const c = S.checks.find(x => x.id === d.c); if (!c) return; c.pay = d.m; checksDirty = true; save(); render(); A.checkOpen(d); },
+  checkDel(d) { if (!confirm('Удалить этот чек? Он пропадёт из статистики.')) return; S.checks = S.checks.filter(x => x.id !== d.c); checksDirty = true; closeModal(); commit(); },
   guestNew() { modal(`<h2>Новый постоянник</h2>${guestForm(null)}<button class="btn primary full big" data-a="guestSave" data-g="">Сохранить</button><button class="btn ghost full" data-a="closeModal">Отмена</button>`); },
   guestEdit(d) { const g = guestById(d.g); if (!g) return; modal(`<h2>${esc(g.name)}</h2>${guestForm(g)}<button class="btn primary full big" data-a="guestSave" data-g="${g.id}">Сохранить</button><button class="btn full" data-a="guestDel" data-g="${g.id}">Удалить</button><button class="btn ghost full" data-a="closeModal">Отмена</button>`); },
   guestSave(d) {
@@ -725,7 +769,7 @@ document.addEventListener('change', async e => {
       const data = JSON.parse(await f.text());
       if (data.app !== APP || !data.state || !Array.isArray(data.state.products)) throw new Error('это не копия Expert Lounge');
       if (!confirm(`Восстановить копию от ${fmtDate(data.at)} ${fmtTime(data.at)}? Текущие данные в телефоне будут заменены.`)) return;
-      S = migrate(data.state); await save(); ui.view = 'tables'; render(); toast('Данные восстановлены');
+      S = migrate(data.state); checksDirty = true; await save(); ui.view = 'tables'; render(); toast('Данные восстановлены');
     } catch (err) { alert('Не удалось прочитать файл: ' + err.message); }
   }
 });
@@ -733,7 +777,7 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; if (ui.view === 'more') render(); });
 
 (async function start() {
-  try { await DB.open(); S = await DB.get('state'); } catch (e) { alert('Не удалось открыть хранилище: ' + e.message); }
+  try { await DB.open(); S = await DB.get('state'); const ch = await DB.get('checks'); if (S && ch) S.checks = ch; } catch (e) { alert('Не удалось открыть хранилище: ' + e.message); }
   S = S ? migrate(S) : defaultState();
   await save();
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) { }
